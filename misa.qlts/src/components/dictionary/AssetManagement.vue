@@ -470,7 +470,7 @@ export default {
     // todo tải lại dữ liệu
     reload(value) {
       if (value == true) {
-        this.getAsset();
+        this.getAsset('filter');
         this.isSuccess = true;
         setTimeout(() => {
           this.isSuccess = false;

@@ -74,7 +74,7 @@
             </div>
 
             <div
-              @click="getAsset()"
+              @click="getAsset('')"
               class="btn icon-refresh features-pane-item"
             ></div>
             <div
@@ -428,6 +428,7 @@ export default {
 
     /// todo hiển thị dialog thêm
     showDialog(text, Id) {
+      document.getElementById("ctxMenu").style.display = "none";
       if (text == "insert") {
         this.formMode = "insert";
       } else {
@@ -470,7 +471,7 @@ export default {
     // todo tải lại dữ liệu
     reload(value) {
       if (value == true) {
-        this.getAsset('filter');
+        this.getAsset('');
         this.isSuccess = true;
         setTimeout(() => {
           this.isSuccess = false;
@@ -537,11 +538,13 @@ export default {
 
     // todo xử lý sự kiện mũi tên lên xuống để select row
     processkey() {
-      var res = this;
-      window.addEventListener("keydown", function (e) {
+      var res = this
+        document.addEventListener("keydown", function (e) {
         var len1 = res.listSelectRow.length; // số phần tử của mảng listSelectRow
         var len2 = res.listAssetId.length; //số phần tử của mảng listAssetId
-        switch (e.keyCode) {
+       if(res.formMode == '')
+       {
+          switch (e.keyCode) {
           case 38:
             {
               //up arrow
@@ -594,8 +597,12 @@ export default {
             return true;
           }
         }
+       }
       });
-    },
+    
+      
+ 
+      },
 
     // todo hiện và thao tác với context menu
     showContexMenu(id, e) {
@@ -626,10 +633,27 @@ export default {
     // todo định dạng kiểu tiền tệ cho nguyên giá
     formatMoney: function (money) {
       if (money != null)
-        var num = money.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.");
+        var num = money.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
       else return "0";
       return num;
     },
+  },
+  watch:{
+    // formMode()
+    // {
+    //   if(this.formMode != '')
+    //   {
+    //     document.getElementById("ctxMenu").style.display = "none";
+    //   }
+     
+    // },
+    "this.$refs.ModalCreateAsset_ref.isActive"()
+    {
+      if(this.$refs.ModalCreateAsset_ref.isActive == false)
+      this.formMode = ''
+      debugger; // eslint-disable-line no-debugger
+      
+    }
   },
   created() {
     this.getAsset();

@@ -245,6 +245,7 @@ export default {
     hide() {
       this.isActive = false;
       document.getElementsByClassName("body-right")[0].style.zIndex = "0";
+      this.formMode = ''
     },
 
     // todo lấy dữ liệu tên phòng ban
@@ -274,32 +275,32 @@ export default {
         e.preventDefault();
       }
 
-      if((this.asset.originalPrice == null ) && this.asset.wearValue == null)
-      {
-        this.asset.originalPrice = "0";
-        this.asset.wearValue  = "0"
-      }
-      if( this.asset.originalPrice == '')
-      {
-        this.asset.originalPrice = "0";
-      }
-      if(this.asset.wearValue == '')
-      {
-        this.asset.wearValue  = "0"
-      }
+      // if((this.asset.originalPrice == null ) && this.asset.wearValue == null)
+      // {
+      //   this.asset.originalPrice = "0";
+      //   this.asset.wearValue  = "0"
+      // }
+      // if( this.asset.originalPrice == '')
+      // {
+      //   this.asset.originalPrice = "0";
+      // }
+      // if(this.asset.wearValue == '')
+      // {
+      //   this.asset.wearValue  = "0"
+      // }
 
-      setTimeout(() => {
-        if (
-          parseInt(this.asset.originalPrice) <= parseInt(this.asset.wearValue)
-        ) {
-          this.asset.wearValue = null;
-        }
-      }, 200);
+      // setTimeout(() => {
+      //   if (
+      //     parseInt(this.asset.originalPrice) <= parseInt(this.asset.wearValue)
+      //   ) {
+      //     this.asset.wearValue = null;
+      //   }
+      // }, 200);
     },
 
     //todo định dạng kiểu tiền tệ
     formatMoney(money) {
-      return money.replace(/\B(?=(\d{3})+(?!\d))/g, `.`);
+      return money.replace(/\B(?=(\d{3})+(?!\d))/g, `,`);
     },
 
     // todo bỏ định dạng tiền tệ
@@ -330,11 +331,13 @@ export default {
     async validateAssetCode() {
       var warning = document.getElementById("assetInput1");
       if (this.asset.assetCode == null || this.asset.assetCode == "") {
-        warning.style.border = "1px solid red";
+        // warning.style.border = "1px solid red";
+        warning.classList.add("borderRed");
         warning.classList.add("hover-validate");
       } else {
         warning.style.border = "#e4e4e4 1px solid";
         warning.classList.remove("hover-validate");
+         warning.classList.remove("borderRed");
       }
     },
 
@@ -342,11 +345,12 @@ export default {
     validateAssetName() {
       var warning = document.getElementById("assetInput2");
       if (this.asset.assetName == null || this.asset.assetName == "") {
-        warning.style.border = "1px solid red";
+         warning.classList.add("borderRed");
         warning.classList.add("hover-validate");
       } else {
         warning.style.border = "#e4e4e4 1px solid";
         warning.classList.remove("hover-validate");
+        warning.classList.remove("borderRed");
       }
     },
 
@@ -354,6 +358,14 @@ export default {
     async save() {
       this.validateAssetName();
       this.validateAssetCode();
+      if(parseInt(this.asset.originalPrice) <= parseInt(this.asset.wearValue))
+      {
+        document.getElementById("assetInput8").classList.add("borderRed")
+        return
+      }
+      else{
+        document.getElementById("assetInput8").classList.remove("borderRed")
+      }
       var res = this;
       if (res.asset.originalPrice == "") res.asset.originalPrice = null;
 
@@ -375,8 +387,7 @@ export default {
               if (respone.data.errorCode == 400) {
                 document.getElementById("assetInput1_warning").innerText =
                   respone.data.userMsg;
-                document.getElementById("assetInput1").style.border =
-                  "1px solid red";
+                document.getElementById("assetInput1").classList.add("borderRed")
                 document
                   .getElementById("assetInput1")
                   .classList.add("hover-validate");
@@ -387,7 +398,7 @@ export default {
                 parseInt(res.asset.originalPrice) <=
                   parseInt(res.asset.wearValue)
               ) {
-                res.asset.wearValue = null;
+                //res.asset.wearValue = null;
                 return;
               } else {
                 res.hide();
@@ -411,8 +422,7 @@ export default {
               } else {
                 document.getElementById("assetInput1_warning").innerText =
                   respone.data.userMsg;
-                document.getElementById("assetInput1").style.border =
-                  "1px solid red";
+                document.getElementById("assetInput1").classList.add("borderRed")
                 document
                   .getElementById("assetInput1")
                   .classList.add("hover-validate");
@@ -561,5 +571,8 @@ export default {
 }
 .modal-content .header .title {
   font-family: GoogleSans-Bold !important;
+}
+.borderRed{
+  border: 1px solid red!important;;
 }
 </style>

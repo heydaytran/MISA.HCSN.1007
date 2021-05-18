@@ -62,7 +62,6 @@ namespace MISA.QLTS.Infrastructure.Repository
             // Thực hiện lấy dữ liệu từ Database
             var entities = _dbConnection.Query<Asset>(query, commandType: CommandType.Text).OrderByDescending(s => s.CreatedDate).ToList();
 
-
             return entities;
         }
     }

@@ -161,7 +161,7 @@ export default {
   props: {
     listAssetType: Array,
     listDepartment: Array,
-    formMode: String,
+    formMode:String,
     assetIdUpdate: String,
   },
   data() {
@@ -245,7 +245,6 @@ export default {
     hide() {
       this.isActive = false;
       document.getElementsByClassName("body-right")[0].style.zIndex = "0";
-      this.formMode = ''
     },
 
     // todo lấy dữ liệu tên phòng ban

@@ -542,7 +542,7 @@ export default {
         document.addEventListener("keydown", function (e) {
         var len1 = res.listSelectRow.length; // số phần tử của mảng listSelectRow
         var len2 = res.listAssetId.length; //số phần tử của mảng listAssetId
-       if(res.formMode == '')
+       if(res.$refs.ModalCreateAsset_ref.isActive == false)
        {
           switch (e.keyCode) {
           case 38:
@@ -639,21 +639,7 @@ export default {
     },
   },
   watch:{
-    // formMode()
-    // {
-    //   if(this.formMode != '')
-    //   {
-    //     document.getElementById("ctxMenu").style.display = "none";
-    //   }
-     
-    // },
-    "this.$refs.ModalCreateAsset_ref.isActive"()
-    {
-      if(this.$refs.ModalCreateAsset_ref.isActive == false)
-      this.formMode = ''
-      debugger; // eslint-disable-line no-debugger
-      
-    }
+  
   },
   created() {
     this.getAsset();

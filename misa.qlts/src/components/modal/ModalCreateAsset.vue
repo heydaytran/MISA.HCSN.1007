@@ -161,7 +161,7 @@ export default {
   props: {
     listAssetType: Array,
     listDepartment: Array,
-    formMode:String,
+    formMode: String,
     assetIdUpdate: String,
   },
   data() {
@@ -185,6 +185,7 @@ export default {
         modifiedBy: null,
         createDate: null,
       },
+      isDuplicate: true,
     };
   },
   methods: {
@@ -211,9 +212,12 @@ export default {
       this.isActive = true;
 
       // focus vào input đầu tiên( mã tài sản)
+
       setTimeout(() => {
         document.getElementById("assetInput1").focus();
       }, 0);
+      //  document.getElementById("assetInput1").focus();
+
       document.getElementsByClassName("body-right")[0].style.zIndex = "999";
       if (this.formMode == "update") {
         await axios
@@ -299,7 +303,7 @@ export default {
 
     //todo định dạng kiểu tiền tệ
     formatMoney(money) {
-      return money.replace(/\B(?=(\d{3})+(?!\d))/g, `,`);
+      return money.replace(/\B(?=(\d{3})+(?!\d))/g, `.`);
     },
 
     // todo bỏ định dạng tiền tệ
@@ -336,7 +340,7 @@ export default {
       } else {
         warning.style.border = "#e4e4e4 1px solid";
         warning.classList.remove("hover-validate");
-         warning.classList.remove("borderRed");
+        warning.classList.remove("borderRed");
       }
     },
 
@@ -344,7 +348,7 @@ export default {
     validateAssetName() {
       var warning = document.getElementById("assetInput2");
       if (this.asset.assetName == null || this.asset.assetName == "") {
-         warning.classList.add("borderRed");
+        warning.classList.add("borderRed");
         warning.classList.add("hover-validate");
       } else {
         warning.style.border = "#e4e4e4 1px solid";
@@ -357,16 +361,17 @@ export default {
     async save() {
       this.validateAssetName();
       this.validateAssetCode();
-      if(parseInt(this.asset.originalPrice) <= parseInt(this.asset.wearValue))
-      {
-        document.getElementById("assetInput8").classList.add("borderRed")
-        return
-      }
-      else{
-        document.getElementById("assetInput8").classList.remove("borderRed")
+      if (
+        parseInt(this.asset.originalPrice) <= parseInt(this.asset.wearValue)
+      ) {
+        document.getElementById("assetInput8").classList.add("borderRed");
+        return;
+      } else {
+        document.getElementById("assetInput8").classList.remove("borderRed");
       }
       var res = this;
       if (res.asset.originalPrice == "") res.asset.originalPrice = null;
+      if (res.asset.wearValue == "") res.asset.wearValue = null;
 
       if (
         this.asset.assetCode == null ||
@@ -386,10 +391,14 @@ export default {
               if (respone.data.errorCode == 400) {
                 document.getElementById("assetInput1_warning").innerText =
                   respone.data.userMsg;
-                document.getElementById("assetInput1").classList.add("borderRed")
                 document
                   .getElementById("assetInput1")
-                  .classList.add("hover-validate");
+                  .classList.add("borderRed");  
+                // document
+                //   .getElementById("assetInput1")
+                //   .classList.add("hover-validate");
+                 document.getElementById("assetInput1_warning").style.display = "block"
+
                 res.$emit("reload", false);
                 return;
               } else if (
@@ -421,7 +430,9 @@ export default {
               } else {
                 document.getElementById("assetInput1_warning").innerText =
                   respone.data.userMsg;
-                document.getElementById("assetInput1").classList.add("borderRed")
+                document
+                  .getElementById("assetInput1")
+                  .classList.add("borderRed");
                 document
                   .getElementById("assetInput1")
                   .classList.add("hover-validate");
@@ -477,7 +488,6 @@ export default {
   background-color: white;
   /* z-index: 22; */
   position: absolute;
-  right: 14px;
 }
 
 .modal-content {
@@ -564,6 +574,9 @@ export default {
 
 .validate-warning {
   display: none;
+    position: absolute;
+    font-style: italic;
+    padding-right: 0;
 }
 .hover-validate:hover ~ .validate-warning {
   display: block;
@@ -571,7 +584,14 @@ export default {
 .modal-content .header .title {
   font-family: GoogleSans-Bold !important;
 }
-.borderRed{
-  border: 1px solid red!important;;
+.borderRed {
+  border: 1px solid red !important;
+}
+
+#assetInput5{
+  text-align: right;
+}
+#assetInput6{
+  text-align: right;
 }
 </style>

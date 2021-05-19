@@ -13,26 +13,30 @@ namespace MISA.QLTS.Infrastructure.Repository
     public class AssetRepository:BaseRepository<Asset>, IAssetRepository
     {
         public bool CheckStoreCode(Guid? assetId, string assetCode, string functionName)
+           
         {
-            var sqlCheckExistCode = "";
-            if (functionName == "Insert")
-            {
-                // Thực hiện lấy số lượng bản ghi có mã khách hàng trùng với mã khách hàng truyền vào
-                sqlCheckExistCode = $"Select AssetCode from Asset where Asset.AssetCode = '{assetCode}'";
-            }
-            else if (functionName == "Update")
-            {
-                // Thực hiện lấy số lượng bản ghi có mã khách hàng trùng với mã khách hàng truyền vào, loại bỏ bản ghi hiện tại
-                sqlCheckExistCode = $"Select AssetCode from Asset where Asset.AssetCode = '{assetCode}' and  Asset.AssetId != '{assetId}'";
-            }
+            //var sqlCheckExistCode = "";
+            //if (functionName == "Insert")
+            //{
+            //    // Thực hiện lấy số lượng bản ghi có mã khách hàng trùng với mã khách hàng truyền vào
+            //    sqlCheckExistCode = $"Select AssetCode from Asset where Asset.AssetCode = '{assetCode}'";
+            //}
+            //else if (functionName == "Update")
+            //{
+            //    // Thực hiện lấy số lượng bản ghi có mã khách hàng trùng với mã khách hàng truyền vào, loại bỏ bản ghi hiện tại
+            //    sqlCheckExistCode = $"Select AssetCode from Asset where Asset.AssetCode = '{assetCode}' and  Asset.AssetId != '{assetId}'";
+            //}
 
-            
-
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("assetId", assetId);
+            parameters.Add("assetCode", assetCode);
+            parameters.Add("functionName", functionName);
             // thực hiện truy vấn 
             var storeExistCode = _dbConnection
                 .Query<string>(
-                    sqlCheckExistCode,
-                    commandType: CommandType.Text);
+                    $"Proc_DuplicateAsset",
+                    param: parameters,
+                    commandType: CommandType.StoredProcedure);
 
             // kiểm tra kết quả:
             if (storeExistCode.AsList().Count > 0)
@@ -53,7 +57,7 @@ namespace MISA.QLTS.Infrastructure.Repository
             }
             else if(typeId != null)
             {
-                query = "SELECT * FROM Asset_Type_Department WHERE (AssetCode LIKE '%" + input + "%' " +
+                query = " select * FROM Asset_Type_Department WHERE (AssetCode LIKE '%" + input + "%' " +
                "or  AssetName LIKE '%" + input + "%' )and AssetTypeId = '"+typeId+"' order by CreatedDate Desc";
             } 
             else
@@ -62,7 +66,7 @@ namespace MISA.QLTS.Infrastructure.Repository
             // Thực hiện lấy dữ liệu từ Database
             var entities = _dbConnection.Query<Asset>(query, commandType: CommandType.Text).OrderByDescending(s => s.CreatedDate).ToList();
 
-            return entities;
+            return entities;    
         }
     }
 }

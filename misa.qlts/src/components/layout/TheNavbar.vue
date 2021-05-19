@@ -237,7 +237,10 @@ export default {
 .nav .nav-item .sub-navbar {
     white-space: nowrap;
 }
-.nav{
+.nav:hover{
+  z-index: 1;
+}
+.nav:hover .sub-navbar{
   z-index: 1;
 }
 .icon-submenu{

@@ -16,6 +16,14 @@ namespace MISA.QLTS.Web.Controllers
             _assetService = assetService;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="filterparams"></param>
+        /// <param name="departmentId"></param>
+        /// <param name="typeId"></param>
+        /// <returns></returns>
         [HttpGet("Filter")]
         public IActionResult Get(string input, [FromQuery] FilterStoreParams filterparams, string departmentId, string typeId)
         {

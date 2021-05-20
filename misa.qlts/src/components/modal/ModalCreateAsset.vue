@@ -126,7 +126,7 @@
               style="text-align: right"
               :value="formatedMoney"
               @keypress="formatNumber($event)"
-              @keyup="updateInput('',$event)"
+              @keyup="updateInput('', $event)"
             />
           </div>
           <div class="clear-float"></div>
@@ -139,10 +139,9 @@
               class="input-one-third"
               type="text"
               name=""
-              
               :value="formatedWearValue"
               @keypress="formatNumber($event)"
-              @keyup="updateInput('wearValue',$event)"
+              @keyup="updateInput('wearValue', $event)"
             />
           </div>
         </div>
@@ -186,10 +185,11 @@ export default {
         modifiedBy: null,
         createDate: null,
       },
+      isDuplicate: true,
     };
   },
   methods: {
-    // todo reset lại các input 
+    // todo reset lại các input
     resetInput() {
       (this.asset.assetId = null),
         (this.asset.assetCode = null),
@@ -212,9 +212,12 @@ export default {
       this.isActive = true;
 
       // focus vào input đầu tiên( mã tài sản)
+
       setTimeout(() => {
         document.getElementById("assetInput1").focus();
       }, 0);
+      //  document.getElementById("assetInput1").focus();
+
       document.getElementsByClassName("body-right")[0].style.zIndex = "999";
       if (this.formMode == "update") {
         await axios
@@ -230,7 +233,7 @@ export default {
             console.error("GET Asset by id Failed: ", error.message);
           });
 
-          // convert ngyên giá sang string
+        // convert ngyên giá sang string
         var a = res.asset.originalPrice;
         if (a == null) a = "";
         else a = res.asset.originalPrice.toString();
@@ -274,6 +277,28 @@ export default {
       if (!/^\d+/g.test(key)) {
         e.preventDefault();
       }
+
+      // if((this.asset.originalPrice == null ) && this.asset.wearValue == null)
+      // {
+      //   this.asset.originalPrice = "0";
+      //   this.asset.wearValue  = "0"
+      // }
+      // if( this.asset.originalPrice == '')
+      // {
+      //   this.asset.originalPrice = "0";
+      // }
+      // if(this.asset.wearValue == '')
+      // {
+      //   this.asset.wearValue  = "0"
+      // }
+
+      // setTimeout(() => {
+      //   if (
+      //     parseInt(this.asset.originalPrice) <= parseInt(this.asset.wearValue)
+      //   ) {
+      //     this.asset.wearValue = null;
+      //   }
+      // }, 200);
     },
 
     //todo định dạng kiểu tiền tệ
@@ -287,22 +312,21 @@ export default {
     },
 
     //todo chuyển số thành chuỗi
-    numberToString(input)
-    {
-      if(input == null) return ""
-      else return input.toString()
+    numberToString(input) {
+      if (input == null) return "";
+      else return input.toString();
     },
 
     // todo chuyển chuỗi thành số
-    stringToNumber(input)
-    {
-      if(input == "" || input == "0") return null
-      else return parseInt(input)
+    stringToNumber(input) {
+      if (input == "" || input == "0") return null;
+      else return parseInt(input);
     },
 
     // update input
-    updateInput(text , e) {
-      if(text == 'wearValue') this.asset.wearValue = this.removeFormatMoney(e.target.value);
+    updateInput(text, e) {
+      if (text == "wearValue")
+        this.asset.wearValue = this.removeFormatMoney(e.target.value);
       else this.asset.originalPrice = this.removeFormatMoney(e.target.value);
     },
 
@@ -310,11 +334,13 @@ export default {
     async validateAssetCode() {
       var warning = document.getElementById("assetInput1");
       if (this.asset.assetCode == null || this.asset.assetCode == "") {
-        warning.style.border = "1px solid red";
+        // warning.style.border = "1px solid red";
+        warning.classList.add("borderRed");
         warning.classList.add("hover-validate");
       } else {
         warning.style.border = "#e4e4e4 1px solid";
         warning.classList.remove("hover-validate");
+        warning.classList.remove("borderRed");
       }
     },
 
@@ -322,11 +348,12 @@ export default {
     validateAssetName() {
       var warning = document.getElementById("assetInput2");
       if (this.asset.assetName == null || this.asset.assetName == "") {
-        warning.style.border = "1px solid red";
+        warning.classList.add("borderRed");
         warning.classList.add("hover-validate");
       } else {
         warning.style.border = "#e4e4e4 1px solid";
         warning.classList.remove("hover-validate");
+        warning.classList.remove("borderRed");
       }
     },
 
@@ -334,10 +361,24 @@ export default {
     async save() {
       this.validateAssetName();
       this.validateAssetCode();
+      if (
+        parseInt(this.asset.originalPrice) <= parseInt(this.asset.wearValue)
+      ) {
+        document.getElementById("assetInput8").classList.add("borderRed");
+        return;
+      } else {
+        document.getElementById("assetInput8").classList.remove("borderRed");
+      }
       var res = this;
-      if(res.asset.originalPrice == "") res.asset.originalPrice = null
+      if (res.asset.originalPrice == "") res.asset.originalPrice = null;
+      if (res.asset.wearValue == "") res.asset.wearValue = null;
 
-      if (this.asset.assetCode == null || this.asset.assetName == null || this.asset.assetCode == "" || this.asset.assetName == "") {
+      if (
+        this.asset.assetCode == null ||
+        this.asset.assetName == null ||
+        this.asset.assetCode == "" ||
+        this.asset.assetName == ""
+      ) {
         return;
       } else {
         if (this.formMode == "insert") {
@@ -346,53 +387,57 @@ export default {
           await axios
             .post("https://localhost:44382/api/v1/assets/", this.asset)
             .then((respone) => {
+              // nếu không gặp lỗi badrequest
+              if (respone.data.errorCode == 400) {
+                document.getElementById("assetInput1_warning").innerText =
+                  respone.data.userMsg;
+                document
+                  .getElementById("assetInput1")
+                  .classList.add("borderRed");  
+                // document
+                //   .getElementById("assetInput1")
+                //   .classList.add("hover-validate");
+                 document.getElementById("assetInput1_warning").style.display = "block"
 
-           
-
-                // nếu không gặp lỗi badrequest
-              if (respone.data.errorCode != 400) {
-                res.hide();
-                res.$emit("reload", true);
-              } else {
-                   document.getElementById("assetInput1_warning").innerText =
-                respone.data.userMsg;
-              document.getElementById("assetInput1").style.border =
-                "1px solid red";
-              document
-                .getElementById("assetInput1")
-                .classList.add("hover-validate");
                 res.$emit("reload", false);
                 return;
+              } else if (
+                respone.data.errorCode != 400 &&
+                parseInt(res.asset.originalPrice) <=
+                  parseInt(res.asset.wearValue)
+              ) {
+                //res.asset.wearValue = null;
+                return;
+              } else {
+                res.hide();
+                res.$emit("reload", true);
               }
             })
             .catch((error) => {
               res.$emit("reload", false);
               console.log(error);
-              alert("Có lỗi xảy ra, vui lòng liên hệ MISA để được trợ giúp")
+              alert("Có lỗi xảy ra, vui lòng liên hệ MISA để được trợ giúp");
             });
         } else {
           // nếu là form sửa dữ liệu
-          
+
           await axios
             .put("https://localhost:44382/api/v1/assets/", this.asset)
             .then((respone) => {
-
-             
-
-
               if (respone.data.errorCode != 400) {
                 res.hide();
                 res.$emit("reload", true);
               } else {
-                   document.getElementById("assetInput1_warning").innerText =
-                respone.data.userMsg;
-              document.getElementById("assetInput1").style.border =
-                "1px solid red";
-              document
-                .getElementById("assetInput1")
-                .classList.add("hover-validate");
+                document.getElementById("assetInput1_warning").innerText =
+                  respone.data.userMsg;
+                document
+                  .getElementById("assetInput1")
+                  .classList.add("borderRed");
+                document
+                  .getElementById("assetInput1")
+                  .classList.add("hover-validate");
                 res.$emit("reload", false);
-                return
+                return;
               }
             })
             .catch((error) => {
@@ -407,22 +452,22 @@ export default {
   watch: {
     // todo theo dõi id phòng ban để lấy ra tên phòng ban tương ứng
     "asset.departmentId": function () {
-      this.getDepartmentName();
+      if (this.asset.departmentId == null) this.asset.departmentName = null;
+      else this.getDepartmentName();
     },
 
     // todo theo dõi mã loại tài sản để lấy ra tên loại tài sản tương ứng
     "asset.assetTypeId": function () {
-      this.getAssetTypeName();
+      if (this.asset.assetTypeId == null) this.asset.assetTypeId = null;
+      else this.getAssetTypeName();
     },
   },
   computed: {
-
-    // todo nhận được kiểu định dạng tiền tệ khi nguyên giá thay đổi 
+    // todo nhận được kiểu định dạng tiền tệ khi nguyên giá thay đổi
     formatedMoney() {
       return this.formatMoney(this.numberToString(this.asset.originalPrice));
     },
     formatedWearValue() {
-      
       return this.formatMoney(this.numberToString(this.asset.wearValue));
     },
   },
@@ -443,7 +488,6 @@ export default {
   background-color: white;
   /* z-index: 22; */
   position: absolute;
-  right: 14px;
 }
 
 .modal-content {
@@ -530,11 +574,24 @@ export default {
 
 .validate-warning {
   display: none;
+    position: absolute;
+    font-style: italic;
+    padding-right: 0;
 }
 .hover-validate:hover ~ .validate-warning {
   display: block;
 }
 .modal-content .header .title {
   font-family: GoogleSans-Bold !important;
+}
+.borderRed {
+  border: 1px solid red !important;
+}
+
+#assetInput5{
+  text-align: right;
+}
+#assetInput6{
+  text-align: right;
 }
 </style>

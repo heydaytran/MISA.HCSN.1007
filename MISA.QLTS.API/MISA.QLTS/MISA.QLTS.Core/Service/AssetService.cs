@@ -10,17 +10,17 @@ using System.Threading.Tasks;
 
 namespace MISA.QLTS.Core.Service
 {
-    public class AssetService:BaseService<Asset>, IAssetService
+    public class AssetService : BaseService<Asset>, IAssetService
     {
         IUnitOfWork _unitOfWork;
-        public AssetService(IUnitOfWork unitOfWork, IBaseRepository<Asset> baseRepository):base(baseRepository)
+        public AssetService(IUnitOfWork unitOfWork, IBaseRepository<Asset> baseRepository) : base(baseRepository)
         {
             _unitOfWork = unitOfWork;
         }
 
-     
 
-        public ResponseResult GetEntitiesFilter(string input, int recordAmount,int pageNumber, string departmentId, string typeId)
+
+        public ResponseResult GetEntitiesFilter(string input, int recordAmount, int pageNumber, string departmentId, string typeId)
         {
             var entities = _unitOfWork.Asset.GetEntitiesFilter(input, recordAmount, pageNumber, departmentId, typeId).ToList();
 
@@ -34,24 +34,32 @@ namespace MISA.QLTS.Core.Service
 
                 totlaPage = entities.Count / recordAmount + 1;
             }
-            else totlaPage = entities.Count / recordAmount;
-
-
-            int limit;
-            if (recordAmount * pageNumber > entities.Count )
+            else
             {
+                //
+                totlaPage = entities.Count / recordAmount;
+            }
+
+            //
+            int limit;
+            if (recordAmount * pageNumber > entities.Count)
+            {
+                //
                 limit = entities.Count;
 
             }
-            else limit = recordAmount * pageNumber;
+            else
+            {
+                limit = recordAmount * pageNumber;
+            }
 
-            
-                for (int i = recordAmount * pageNumber - recordAmount; i < limit; i++)
-                {
-                    b.Add(entities[i]);
-                }
-           
+            //
+            for (int i = recordAmount * pageNumber - recordAmount; i < limit; i++)
+            {
+                b.Add(entities[i]);
+            }
 
+            //
             if (b != null)
             {
                 result.Data = b;
@@ -67,6 +75,7 @@ namespace MISA.QLTS.Core.Service
                 result.UserMsg = Resource.ResourceMessage.Error_Filter;
                 result.DevMsg = Resource.ResourceMessage.Error_Filter;
             }
+
             return result;
 
         }

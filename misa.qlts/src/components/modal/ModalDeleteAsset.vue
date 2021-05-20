@@ -12,13 +12,19 @@
           <div class="btn btn-confirm-delete" @click="confirmDelete()">Xóa</div>
         </div>
       </div>
+         <BaseLoading ref="BaseLoading_ref"/>
     </div>
   </div>
 </template>
 
 <script>
+import BaseLoading from '../common/BaseLoading.vue'
 import axios from "axios";
+
 export default {
+  components:{
+    BaseLoading
+  },
   props: {
     listSelectRow:Array
   },
@@ -53,6 +59,8 @@ export default {
 //     },
 
      async confirmDelete() {
+       
+
       var res = this
       for (var i = 0; i < this.listSelectRow.length; i++) {
         await axios
@@ -61,7 +69,7 @@ export default {
             this.listSelectRow[i]
           )
           .then((Response) => {
-
+            res.$refs.BaseLoading_ref.show()
             console.log(Response);
           })
           .catch((err)=>{
@@ -70,6 +78,7 @@ export default {
             return
           })
       }
+      res.$refs.BaseLoading_ref.show()
       res.hide()
       res.$emit("reload", true)
 

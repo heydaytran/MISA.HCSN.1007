@@ -6,9 +6,10 @@
           id="success-dialog"
           v-show="isSuccess"
           color="green"
-          elevation="13"
+          elevation="30"
           type="success"
-          >Thao tác thành công!</v-alert
+          >
+          {{alerMsg}}</v-alert
         >
 
         <div v-show="isFilterMenu" class="filter-menu">
@@ -49,7 +50,7 @@
         </div>
 
         <v-alert v-if="isChoose" id="required-choose" type="warning"
-          >Vui lòng chọn bản ghi</v-alert
+          >{{alerMsg}}</v-alert
         >
 
         <div class="features-pane">
@@ -74,7 +75,7 @@
             </div>
 
             <div
-              @click="getAsset()"
+              @click="getAsset('')"
               class="btn icon-refresh features-pane-item"
             ></div>
             <div
@@ -191,12 +192,8 @@
               </td>
             </tr>
           </tbody>
-          <div v-if="getSuccess" class="loading-dialog">
-            <div class="icon-loading"></div>
-          </div>
-          <div v-if="!isSuccess" class="loading-dialog-execu">
-            <div class="icon-loading"></div>
-          </div>
+         <BaseLoading ref="BaseLoading_ref"/>
+        
           <div v-if="getEmty" class="loading-emty">Không có dữ liệu</div>
         </table>
         <div class="ctx-menu" id="ctxMenu">
@@ -286,12 +283,14 @@
 <script>
 import ModalCreateAsset from "../modal/ModalCreateAsset.vue";
 import ModalDeleteAsset from "../modal/ModalDeleteAsset.vue";
+import BaseLoading from "../common/BaseLoading.vue"
 import axios from "axios";
 
 export default {
   components: {
     ModalDeleteAsset,
     ModalCreateAsset,
+    BaseLoading
   },
   props:{
     isFilterMenu:Boolean
@@ -313,6 +312,7 @@ export default {
       listDepartment: [],
       listAssetType: [],
       formMode: "",
+      alerMsg: "",
       assetIdUpdate: null,
       listSelectRow: [],
       listAssetId: [],
@@ -339,7 +339,7 @@ export default {
         idDepartment:null,
         idType:null,
         allAsset:'tất cả'
-      }
+      },
     };
   },
   methods: {
@@ -360,9 +360,10 @@ export default {
      */
     async getAsset(text, idDepartment, idType) {
       
+      // xử lý filter trên thanh combobox
       if(idDepartment == undefined || idDepartment=='' ) this.comboxFilter.idDepartment =''
       else {
-        this.sendOption('Phòng ban')
+        this.sendOption('Phòng ban') // gửi dòng chữ 'phòng ban' hiển thị lên combobox
         this.comboxFilter.idDepartment = idDepartment
       }
       if(idType == undefined || idType=='') this.comboxFilter.idType =''
@@ -375,7 +376,8 @@ export default {
 
       var res = this;
       this.listSelectRow = [];
-      this.getSuccess = true;
+     
+      res.$refs.BaseLoading_ref.show();
       this.getEmty = false;
       this.amountAsset = 0;
       this.totalPrice = 0;
@@ -404,7 +406,7 @@ export default {
             res.getEmty = true;
           }
 
-          res.getSuccess = false;
+          res.$refs.BaseLoading_ref.hide()
           res.listAssetId = [];
           res.paging.amountPage = response.data.totalPage;
 
@@ -420,18 +422,21 @@ export default {
         .catch((error) => {
           console.log(error);
           setTimeout(() => {
-            res.getSuccess = false; // tắt dialog loading
+            res.$refs.BaseLoading_ref.hide(); // tắt dialog loading
             res.getEmty = true; // b
-          }, 3000);
+          }, 4000);
         });
     },
 
     /// todo hiển thị dialog thêm
     showDialog(text, Id) {
+      document.getElementById("ctxMenu").style.display = "none";
       if (text == "insert") {
         this.formMode = "insert";
+        this.alerMsg = "Thêm mới thành công"
       } else {
         this.formMode = "update";
+         this.alerMsg = "Cập nhật thành công"
         this.assetIdUpdate = Id;
       }
       setTimeout(() => {
@@ -470,7 +475,7 @@ export default {
     // todo tải lại dữ liệu
     reload(value) {
       if (value == true) {
-        this.getAsset();
+        this.getAsset('');
         this.isSuccess = true;
         setTimeout(() => {
           this.isSuccess = false;
@@ -481,8 +486,12 @@ export default {
     //todo hiển thị form xác nhận xóa
     showDeleteDialog(text) {
       // var res = this
+      this.alerMsg ='Xóa thành công!' 
       if (text != "inRow" && this.listSelectRow.length == 0)
-        this.isChoose = true;
+       {
+          this.isChoose = true;
+        this.alerMsg = 'Vui lòng chọn bản ghi'
+       }
       else {
         this.$refs.ModalDeleteAsset_ref.show();
         this.isChoose = false;
@@ -537,11 +546,13 @@ export default {
 
     // todo xử lý sự kiện mũi tên lên xuống để select row
     processkey() {
-      var res = this;
-      window.addEventListener("keydown", function (e) {
+      var res = this
+        document.addEventListener("keydown", function (e) {
         var len1 = res.listSelectRow.length; // số phần tử của mảng listSelectRow
         var len2 = res.listAssetId.length; //số phần tử của mảng listAssetId
-        switch (e.keyCode) {
+       if(res.$refs.ModalCreateAsset_ref.isActive == false)
+       {
+          switch (e.keyCode) {
           case 38:
             {
               //up arrow
@@ -594,8 +605,12 @@ export default {
             return true;
           }
         }
+       }
       });
-    },
+    
+      
+ 
+      },
 
     // todo hiện và thao tác với context menu
     showContexMenu(id, e) {
@@ -626,18 +641,22 @@ export default {
     // todo định dạng kiểu tiền tệ cho nguyên giá
     formatMoney: function (money) {
       if (money != null)
-        var num = money.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.");
+        var num = money.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
       else return "0";
       return num;
     },
   },
+  watch:{
+  
+  },
   created() {
-    this.getAsset();
+    //this.getAsset();
     this.processkey();
   },
   mounted() {
     this.getDepartment();
     this.getAssetType();
+     this.getAsset();
   },
 };
 </script>
@@ -924,35 +943,6 @@ table tbody tr {
   }
 }
 
-.loading-dialog {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  opacity: 0.5;
-  top: 34px;
-  background: black;
-  display: flex;
-  align-items: center;
-}
-
-.loading-dialog .icon-loading {
-  background-image: url("../../assets/UI/Icon/loading.svg");
-  height: 80px;
-  width: 80px;
-  background-size: contain;
-  margin: auto;
-}
-.loading-emty {
-  font-weight: bold;
-  width: inherit;
-  display: flex;
-  height: 138px;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-  position: absolute;
-  top: 0;
-}
 table tbody tr td {
   font-family: "GoogleSans";
 }
@@ -1164,5 +1154,27 @@ table tbody tr td {
 .menu-child:hover{
   display: block;
 }
+table{
+  position: relative;
+}
+
+.loading-emty{
+ font-size: 24px;
+    font-style: italic;
+    white-space: nowrap;
+    position: absolute;
+    left: calc((100% - 180px)/2);
+    margin-top: 21px;
+}
+
+.v-icon{
+  background-image: url('../../assets/icon/add.png')!important;
+    background-size: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 28px;
+    width: 28px;
+}
+
 
 </style>

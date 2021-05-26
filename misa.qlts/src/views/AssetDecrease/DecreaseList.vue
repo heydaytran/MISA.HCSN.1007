@@ -121,7 +121,7 @@
                 class="hover-pointer"
                 style="text-align: left"
               >
-                mã tài sản
+                NGÀY GHI GIẢM
               </th>
               <th
                 sortProp="name"
@@ -130,7 +130,7 @@
                 class="hover-pointer"
                 style="text-align: left"
               >
-                Tên tài sản
+               SỐ CHỨNG TỪ
               </th>
               <th
                 sortProp="type"
@@ -139,7 +139,7 @@
                 id="columnAssetType"
                 class="hover-pointer"
               >
-                Loại tài sản
+                LÝ DO GHI GIẢM
               </th>
               <th
                 sortProp="department"
@@ -148,17 +148,9 @@
                 class="hover-pointer"
                 style="text-align: left"
               >
-                Phòng ban
+                GIÁ TRỊ CÒN LẠI
               </th>
-              <th
-                sortProp="price"
-                sortOrder="asc"
-                id="columnPrice"
-                class="hover-pointer"
-                style="text-align: right"
-              >
-                nguyên giá
-              </th>
+             
               <th style="text-align: left">chức năng</th>
             </tr>
           </thead>
@@ -176,9 +168,7 @@
               <td>{{ asset.assetName }}</td>
               <td>{{ asset.assetTypeName }}</td>
               <td>{{ asset.departmentName }}</td>
-              <td style="text-align: right">
-                {{ asset.originalPrice | formatMoney(asset.originalPrice) }}
-              </td>
+              
               <td class="no-border-right">
                 <div class="features-box">
                   <div
@@ -291,9 +281,9 @@
 </template>
 
 <script>
-import ModalCreateAsset from "../modal/ModalCreateAsset.vue";
-import ModalDeleteAsset from "../modal/ModalDeleteAsset.vue";
-import BaseLoading from "../common/BaseLoading.vue";
+import ModalCreateAsset from "../../components/modal/ModalCreateAsset.vue";
+import ModalDeleteAsset from "../../components/modal/ModalDeleteAsset.vue";
+import BaseLoading from "../../components/common/BaseLoading.vue";
 import axios from "axios";
 
 export default {
@@ -377,74 +367,80 @@ export default {
      * Gửi request GET tới API
      * Author: TVThinh (12/5/2021)
      */
-    async getAsset(text, idDepartment, idType) {
-      // xử lý filter trên thanh combobox
-      if (idDepartment == undefined || idDepartment == "")
-        this.comboxFilter.idDepartment = "";
-      else {
-        this.sendOption("Phòng ban"); // gửi dòng chữ 'phòng ban' hiển thị lên combobox
-        this.comboxFilter.idDepartment = idDepartment;
-      }
-      if (idType == undefined || idType == "") this.comboxFilter.idType = "";
-      else {
-        this.sendOption("Loại tài sản");
-        this.comboxFilter.idType = idType;
-      }
+    // async getAsset(text, idDepartment, idType) {
+    //   // xử lý filter trên thanh combobox
+    //   if (idDepartment == undefined || idDepartment == "")
+    //     this.comboxFilter.idDepartment = "";
+    //   else {
+    //     this.sendOption("Phòng ban"); // gửi dòng chữ 'phòng ban' hiển thị lên combobox
+    //     this.comboxFilter.idDepartment = idDepartment;
+    //   }
+    //   if (idType == undefined || idType == "") this.comboxFilter.idType = "";
+    //   else {
+    //     this.sendOption("Loại tài sản");
+    //     this.comboxFilter.idType = idType;
+    //   }
 
-      if (text == "filter") this.paging.pageNumber = 1;
+    //   if (text == "filter") this.paging.pageNumber = 1;
 
-      var res = this;
-      this.listSelectRow = [];
+    //   var res = this;
+    //   this.listSelectRow = [];
 
-      res.$refs.BaseLoading_ref.show();
-      this.getEmty = false;
-      this.amountAsset = 0;
-      this.totalPrice = 0;
+    //   res.$refs.BaseLoading_ref.show();
+    //   this.getEmty = false;
+    //   this.amountAsset = 0;
+    //   this.totalPrice = 0;
 
-      // if (document.getElementById("ctxMenu"))
-      //   // nếu context menu vẫn hiện
-      //   document.getElementById("ctxMenu").style.display = "none";
+    //   if (document.getElementById("ctxMenu"))
+    //     // nếu context menu vẫn hiện
+    //     document.getElementById("ctxMenu").style.display = "none";
 
-      await axios
-        .get(
-          "https://localhost:44382/api/v1/Assets/Filter/?input=" +
-            res.inputSearch +
-            "&recordAmount=" +
-            this.paging.recordNumber +
-            "&pageNumber=" +
-            this.paging.pageNumber +
-            "&departmentId=" +
-            this.comboxFilter.idDepartment +
-            "&typeId=" +
-            this.comboxFilter.idType
-        )
-        .then((response) => {
-          res.listAsset = response.data.data;
+    //   await axios
+    //     .get(
+    //       "https://localhost:44382/api/v1/Assets/Filter/?input=" +
+    //         res.inputSearch +
+    //         "&recordAmount=" +
+    //         this.paging.recordNumber +
+    //         "&pageNumber=" +
+    //         this.paging.pageNumber +
+    //         "&departmentId=" +
+    //         this.comboxFilter.idDepartment +
+    //         "&typeId=" +
+    //         this.comboxFilter.idType
+    //     )
+    //     .then((response) => {
+    //       res.listAsset = response.data.data;
 
-          if (res.listAsset.length == 0) {
-            res.getEmty = true;
-          }
+    //       if (res.listAsset.length == 0) {
+    //         res.getEmty = true;
+    //       }
 
-          res.$refs.BaseLoading_ref.hide();
-          res.listAssetId = [];
-          res.paging.amountPage = response.data.totalPage;
+    //       res.$refs.BaseLoading_ref.hide();
+    //       res.listAssetId = [];
+    //       res.paging.amountPage = response.data.totalPage;
 
-          res.listAsset.forEach((element) => {
-            // duyệt qua tất cả các bản ghi
-            res.listAssetId.push(element.assetId); // push tất cả id tài sản vào mảng
-            res.amountAsset++; // đếm tổng số bản ghi
-            if (element.originalPrice != null) {
-              res.totalPrice += parseInt(element.originalPrice); // tính tổng nguyên giá
-            }
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          setTimeout(() => {
-            res.$refs.BaseLoading_ref.hide(); // tắt dialog loading
-            res.getEmty = true; // b
-          }, 4000);
-        });
+    //       res.listAsset.forEach((element) => {
+    //         // duyệt qua tất cả các bản ghi
+    //         res.listAssetId.push(element.assetId); // push tất cả id tài sản vào mảng
+    //         res.amountAsset++; // đếm tổng số bản ghi
+    //         if (element.originalPrice != null) {
+    //           res.totalPrice += parseInt(element.originalPrice); // tính tổng nguyên giá
+    //         }
+    //       });
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //       setTimeout(() => {
+    //         res.$refs.BaseLoading_ref.hide(); // tắt dialog loading
+    //         res.getEmty = true; // b
+    //       }, 4000);
+    //     });
+    // },
+
+
+    async getAsset()
+    {
+      await axios.get('http://localhost:56697/api/v1/')
     },
 
     /// todo hiển thị dialog thêm
@@ -521,7 +517,7 @@ export default {
 
     //  select hàng, nếu hàng đã được select thì xóa khỏi mẩng listSelectRow, và ngược lại
     selectRow(id, event) {
-      // document.getElementById("ctxMenu").style.display = "none";
+      document.getElementById("ctxMenu").style.display = "none";
       if (event.ctrlKey == false && event.shiftKey == false) {
         this.listSelectRow = [];
         this.listSelectRow.push(id);
@@ -651,13 +647,6 @@ export default {
         this.getAsset();
       }
     },
-    hideContextMenu()
-    {
-      document.addEventListener("click", function(){
-      document.getElementById("ctxMenu").style.display = "none";
-      })
-
-    }
   },
   filters: {
     // todo định dạng kiểu tiền tệ cho nguyên giá
@@ -677,7 +666,6 @@ export default {
     this.getDepartment();
     this.getAssetType();
     this.getAsset();
-    this.hideContextMenu()
   },
 };
 </script>
@@ -933,7 +921,9 @@ table tbody tr {
   cursor: pointer;
 }
 
-
+.selected-row {
+  background: #a1adb3 !important;
+}
 
 .v-sheet.v-alert {
   position: absolute;
@@ -1193,8 +1183,5 @@ table {
   background-position: center;
   height: 28px;
   width: 28px;
-}
-.selected-row {
-  background: #d0d6e4 !important;
 }
 </style>

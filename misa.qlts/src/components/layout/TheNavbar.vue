@@ -11,7 +11,7 @@
     </div>
     <div id="navItem2" class="nav-item option nav-item-icon">
       <div class="icon-nav icon-community-line"></div>
-      <div class="nav-item-text">Tài sản</div>
+      <div class="nav-item-text" > Tài sản</div> 
       <div class="icon-submenu">
 
       </div>
@@ -19,7 +19,7 @@
         <div class="sub-navbar-item">Ghi tăng</div>
         <div class="sub-navbar-item">Điều chuyển</div>
         <div class="sub-navbar-item">Tính hao mòn</div>
-        <div class="sub-navbar-item">Ghi giảm</div>
+        <router-link class="sub-navbar-item" to="/asset-decrease" tag="div"> Ghi giảm</router-link> 
       </div>
     </div>
     <div id="navItem3" class="nav-item option nav-item-icon">
@@ -40,7 +40,7 @@
 
       </div>
       <div class="sub-navbar">
-        <div class="sub-navbar-item">Tài sản</div>
+         <router-link class="sub-navbar-item" to="/asset" tag="div"> Tài sản</router-link> 
         <div class="sub-navbar-item">Vật liệu</div>
         <div class="sub-navbar-item">Nguyên liệu</div>
       </div>

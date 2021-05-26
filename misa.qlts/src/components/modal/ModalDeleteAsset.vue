@@ -1,11 +1,14 @@
 <template>
   <div>
-    <div v-if="isActive" class="div-container modal">
+    <div v-show="isActive" class="div-container modal">
       <div class="modal-background"></div>
       <div class="modal-content">
-        <div class="modal-header">Xóa bản ghi</div>
+        <div class="modal-header">Xóa bản ghi
+          <span @click="hide()"><div data-v-1b34bf39="" class="icon-cancel btn btn-close"></div></span>
+        </div>
         <div class="modal-content" style="width: 318px">
-          Bạn chắc chắn muốn xóa bản ghi này chứ?
+          Toàn bộ dữ liệu các tài sản đã chọn sẽ bị xóa.
+          Bạn có chắc chắn muốn xóa?
         </div>
         <div class="modal-footer">
           <div class="btn" @click="hide()" >Hủy</div>
@@ -59,9 +62,9 @@ export default {
 //     },
 
      async confirmDelete() {
-       
-
       var res = this
+      res.$refs.BaseLoading_ref.show()
+
       for (var i = 0; i < this.listSelectRow.length; i++) {
         await axios
           .delete(
@@ -69,7 +72,7 @@ export default {
             this.listSelectRow[i]
           )
           .then((Response) => {
-            res.$refs.BaseLoading_ref.show()
+            res.$refs.BaseLoading_ref.hide()
             console.log(Response);
           })
           .catch((err)=>{
@@ -78,7 +81,6 @@ export default {
             return
           })
       }
-      res.$refs.BaseLoading_ref.show()
       res.hide()
       res.$emit("reload", true)
 
@@ -132,5 +134,34 @@ export default {
       }
     }
   }
+}
+
+.modal .modal-content {
+    border-radius: 4px;
+}
+.modal .modal-content .modal-header {
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.modal .modal-content .modal-footer {
+    border-radius: 4px;
+}
+.modal .modal-content{
+  height: auto;
+}
+.modal .modal-content .modal-header {
+    height: 50px;
+}
+.icon-cancel {
+    background-image: url(/img/cancel.cbb32219.svg);
+    background-repeat: no-repeat;
+    background-size: 14px 18px;
+    background-position: center;
+    /* width: 20px; */
+    /* height: 20px; */
+    position: absolute;
+    right: 3px;
+    top: 0px;
+    cursor: pointer;
 }
 </style>

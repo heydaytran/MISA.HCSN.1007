@@ -1,12 +1,12 @@
-<template>
+// <template>
   <v-app>
     <v-main>
       <div class="body-container">
         <Navbar />
         <div class="body-right">
           <Header @activeFilterMenu="activeFilterMenu" :optionFilter="optionFilter"/>
-          <AssetManagement :isFilterMenu="isFilterMenu" @allAsset="allAsset" />
-        </div>
+        <router-view tag="div" :isFilterMenu="isFilterMenu" @allAsset="allAsset" />
+       </div>
       </div>
     </v-main>
   </v-app>
@@ -15,7 +15,6 @@
 <script>
 import Header from "./components/layout/TheHeader.vue";
 import Navbar from "./components/layout/TheNavbar.vue";
-import AssetManagement from "./components/dictionary/AssetManagement.vue";
 
 export default {
   name: "App",
@@ -23,7 +22,6 @@ export default {
   components: {
     Header,
     Navbar,
-    AssetManagement,
   },
   methods: {
     activeFilterMenu(value) {
@@ -46,7 +44,15 @@ export default {
 
 
 
-<style lang="scss">
+<style lang="scss" >
+@import url("style/scss/common.scss");
+@import url("style/scss/icon.scss");
+@import url("style/scss/button.scss");
+@import url("./style/scss/combobox.scss");
+ @import url("style/scss/input.scss");
+@import url("style/scss/table.scss");
+@import url("style/scss/modal.scss");
+
 @font-face {
   font-family: GoogleSans;
   src: url("./assets/font/GoogleSans-Thin.otf");
@@ -72,11 +78,12 @@ body {
   font-family: GoogleSans;
   // font-family: 'GoogleSans';
 }
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
-}
-/* Track */
+ }
+// /* Track */
 ::-webkit-scrollbar-track:hover {
   background: rgb(235, 235, 235);
   // background: rgb(194, 194, 194);
@@ -111,13 +118,7 @@ body {
   height: auto;
   width: auto;
 }
-@import url("style/scss/common.scss");
-@import url("style/scss/icon.scss");
-@import url("style/scss/button.scss");
-@import url("./style/scss/combobox.scss");
-@import url("style/scss/input.scss");
-@import url("style/scss/table.scss");
-@import url("style/scss/modal.scss");
+
 .body-right {
   /* width: calc(100% - 210px); */
   /* float: left; */

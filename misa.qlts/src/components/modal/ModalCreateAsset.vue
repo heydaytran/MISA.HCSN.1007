@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="isActive" class="modal">
+    <div v-show="isActive" class="modal">
       <div class="modal-background"></div>
       <div class="modal-content">
         <div class="header">
@@ -29,6 +29,9 @@
             <div id="assetInput1_warning" class="validate-warning">
               Thông tin bắt buộc nhập
             </div>
+             <div v-show="dup" style="display:block" id="assetInput1_warning" class="validate-warning">
+              Mã tài sản bị trùng
+            </div>
           </div>
           <div class="input-field">
             <label for="">Tên tài sản (<span>*</span>)</label>
@@ -50,6 +53,7 @@
           <div class="input-field">
             <label>Mã phòng ban</label>
             <v-autocomplete
+              tag="div"
               id="assetInput3"
               class="custom-autocomplete input-one-third"
               :items="listDepartment"
@@ -144,6 +148,26 @@
               @keyup="updateInput('wearValue', $event)"
             />
           </div>
+          <!-- <DatePicker
+            class="input-sm"
+            input-class="datetime" 
+            placeholder="__/__/____"
+            v-model="asset.createdDate" 
+            type="date"
+            format="DD/MM/YYYY"
+           
+            value-type="YYYY-MM-DD"
+            
+            :lang="lang"
+            :disabled-date="disabledAfterToday"
+            @input-error="showWarning('Ngày sai định dạng', true)"
+          >
+            <template v-slot:header="{ emit }">
+              <button class="mx-btn mx-btn-text" @click="emit(new Date())">
+                Today
+              </button>
+            </template>
+          </DatePicker> -->
         </div>
         <div class="footer">
           <div class="btn btn-cancel" tabindex="0" @click="hide()">Hủy</div>
@@ -155,9 +179,17 @@
   </div>
 </template>
 
+<script src="https://unpkg.com/vuejs-datepicker/dist/locale/translations/fr.js"></script>
+
 <script>
 import axios from "axios";
+import DatePicker from "vue2-datepicker";
+// import 'vue2-datepicker/locale/vi';
+
 export default {
+  components: {
+    DatePicker,
+  },
   props: {
     listAssetType: Array,
     listDepartment: Array,
@@ -167,7 +199,7 @@ export default {
   data() {
     return {
       isActive: false,
-      isSuccess: true,
+      showSuccess: true,
       asset: {
         assetId: null,
         assetCode: null,
@@ -183,9 +215,55 @@ export default {
         assetTypeName: null,
         createdBy: null,
         modifiedBy: null,
-        createDate: null,
+        createDate: "",
       },
-      isDuplicate: true,
+      dup: false,
+      lang: {
+        formatLocale: {
+          firstDayOfWeek: 1,
+        },
+        days: ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"],
+        months: [
+          "Tháng 1",
+          "Tháng 2",
+          "Tháng 3",
+          "Tháng 4",
+          "Tháng 5",
+          "Tháng 6",
+          "Tháng 7",
+          "Tháng 8",
+          "Tháng 9",
+          "Tháng 10",
+          "Tháng 11",
+          "Tháng 12",
+        ],
+        weekdays: [
+          "Chủ nhật",
+          "thứ hai",
+          "thứ ba",
+          "thứ tư",
+          "thứ năm",
+          "thứ sáu",
+          "Thứ Bảy",
+        ],
+        weekdaysMin: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+        yearFormat: "YYYY",
+        monthsShort: [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08",
+          "T09",
+          "T10",
+          "T11",
+          "T12",
+        ],
+        monthFormat: "TMM",
+      },
     };
   },
   methods: {
@@ -210,6 +288,19 @@ export default {
     async show() {
       var res = this;
       this.isActive = true;
+      this.dup = false
+
+      var warning = document.getElementById("assetInput1");
+
+      warning.classList.remove("borderRed");
+      warning.classList.remove("hover-validate");
+
+       var warning1 = document.getElementById("assetInput2");
+
+      warning1.classList.remove("borderRed");
+      warning1.classList.remove("hover-validate");
+
+      // document.getElementById("assetInput1_warning").style.display = "none"
 
       // focus vào input đầu tiên( mã tài sản)
 
@@ -305,6 +396,15 @@ export default {
     formatMoney(money) {
       return money.replace(/\B(?=(\d{3})+(?!\d))/g, `.`);
     },
+    /**
+     * ẩn hết những ngày sau ngày hiện tại
+     * CreatedBy: TVHIEN (13/04/2021)
+     */
+    disabledAfterToday(date) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return date > today;
+    },
 
     // todo bỏ định dạng tiền tệ
     removeFormatMoney(money) {
@@ -332,6 +432,7 @@ export default {
 
     // validate trống trường dữ liệu mã tài sản
     async validateAssetCode() {
+      this.dup = false
       var warning = document.getElementById("assetInput1");
       if (this.asset.assetCode == null || this.asset.assetCode == "") {
         // warning.style.border = "1px solid red";
@@ -383,21 +484,14 @@ export default {
       } else {
         if (this.formMode == "insert") {
           //nếu là form thêm dữ liệu
-          res.asset.createDate = new Date(Date.now());
           await axios
             .post("https://localhost:44382/api/v1/assets/", this.asset)
             .then((respone) => {
               // nếu không gặp lỗi badrequest
               if (respone.data.errorCode == 400) {
-                document.getElementById("assetInput1_warning").innerText =
-                  respone.data.userMsg;
-                document
-                  .getElementById("assetInput1")
-                  .classList.add("borderRed");  
-                // document
-                //   .getElementById("assetInput1")
-                //   .classList.add("hover-validate");
-                 document.getElementById("assetInput1_warning").style.display = "block"
+                var warning = document.getElementById("assetInput1");
+                res.dup = true
+                warning.classList.add("borderRed");
 
                 res.$emit("reload", false);
                 return;
@@ -406,9 +500,10 @@ export default {
                 parseInt(res.asset.originalPrice) <=
                   parseInt(res.asset.wearValue)
               ) {
-                //res.asset.wearValue = null;
+                res.dup =false
                 return;
               } else {
+                res.dup =false
                 res.hide();
                 res.$emit("reload", true);
               }
@@ -428,14 +523,11 @@ export default {
                 res.hide();
                 res.$emit("reload", true);
               } else {
-                document.getElementById("assetInput1_warning").innerText =
-                  respone.data.userMsg;
+                 res.dup = true
                 document
                   .getElementById("assetInput1")
                   .classList.add("borderRed");
-                document
-                  .getElementById("assetInput1")
-                  .classList.add("hover-validate");
+                
                 res.$emit("reload", false);
                 return;
               }
@@ -447,6 +539,13 @@ export default {
             });
         }
       }
+    },
+
+    showWarning(text) {
+      this.$emit("msgAlert", text, true);
+    },
+    checkPostedDate() {
+      this.$emit("reload", false);
     },
   },
   watch: {
@@ -476,7 +575,68 @@ export default {
 </script>
 
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
+input {
+  padding: 8px 16px;
+  outline: none;
+  border: #beccc9 1px solid;
+}
+
+input.required {
+  border: red 1px solid !important;
+}
+
+.input-search {
+  width: 200px;
+  padding: 8px 46px 8px 16px;
+  border: 1px solid #beccc9;
+}
+
+.input-field .input-black {
+  background-color: #f5f5f5;
+  pointer-events: none;
+}
+
+.input-field .input-two-third {
+  width: 437px;
+}
+
+.input-field .input-one-third {
+  width: 210px;
+}
+
+.custom-autocomplete input {
+  border: none;
+  padding-left: 10px;
+  font-size: 14px;
+}
+
+.v-text-field > .v-input__control > .v-input__slot:before {
+  border-style: none;
+}
+
+.v-input {
+  padding-top: 0px;
+  margin-top: 0px;
+}
+
+.v-text-field__details {
+  display: none;
+}
+
+.v-input__slot {
+  margin-bottom: 0px;
+}
+
+.v-list-item__content .v-list-item__title {
+  font-size: 14px;
+}
+
+// ::-webkit-scrollbar {
+//   width: 8px;
+//   height: 8px;
+//  }
+
 .test-autocomplete {
   border: 1px solid black;
 }
@@ -545,6 +705,7 @@ export default {
       float: left;
       padding: 0 16px 16px 0px;
       position: relative;
+      height: 77px;
 
       label {
         display: block;
@@ -574,9 +735,9 @@ export default {
 
 .validate-warning {
   display: none;
-    position: absolute;
-    font-style: italic;
-    padding-right: 0;
+  position: absolute;
+  font-style: italic;
+  padding-right: 0;
 }
 .hover-validate:hover ~ .validate-warning {
   display: block;
@@ -588,10 +749,27 @@ export default {
   border: 1px solid red !important;
 }
 
-#assetInput5{
+#assetInput5 {
   text-align: right;
 }
-#assetInput6{
+#assetInput6 {
   text-align: right;
 }
+
+// input[type="date"] {
+//   opacity: 1;
+//   display: block;
+//   background: url(../../assets/icon/calendar.svg) no-repeat;
+//   width: 30px;
+//   height: 30px;
+//   border-width: thin;
+//   margin-top: 20px;
+//   transform: translateX(5px);
+// }
+// @import url("../../style/scss/common.scss");
+// @import url("../../style/scss/icon.scss");
+// @import url("../../style/scss/button.scss");
+// @import url("./../../style/scss/combobox.scss");
+// @import url("../../style/scss/table.scss");
+// @import url("../../style/scss/modal.scss");
 </style>

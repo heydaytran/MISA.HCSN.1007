@@ -152,6 +152,7 @@ namespace MISA.QLTS.Core.Service
                 result.ErrorCode = Enum.ErrorCode.NONE;
                 result.IsSuccess = true;
             }
+
             else
             {
                 result.IsSuccess = false;

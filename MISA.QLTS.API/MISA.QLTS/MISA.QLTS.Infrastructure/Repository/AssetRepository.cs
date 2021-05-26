@@ -49,22 +49,12 @@ namespace MISA.QLTS.Infrastructure.Repository
 
         public IEnumerable<Asset> GetEntitiesFilter(string input, int recordAmount, int pageNumber, string departmentId, string typeId)
         {
-            string query;
-            if (departmentId != null)
-            {
-                query = "SELECT * FROM Asset_Type_Department WHERE (AssetCode LIKE '%" + input + "%' " +
-                "or  AssetName LIKE '%" + input + "%' )and DepartmentId = '" + departmentId + "' order by CreatedDate Desc";
-            }
-            else if(typeId != null)
-            {
-                query = " select * FROM Asset_Type_Department WHERE (AssetCode LIKE '%" + input + "%' " +
-               "or  AssetName LIKE '%" + input + "%' )and AssetTypeId = '"+typeId+"' order by CreatedDate Desc";
-            } 
-            else
-             query = "SELECT * FROM Asset_Type_Department WHERE AssetCode LIKE '%" + input + "%' " +
-                "or  AssetName LIKE '%" + input + "%' order by CreatedDate Desc";
-            // Thực hiện lấy dữ liệu từ Database
-            var entities = _dbConnection.Query<Asset>(query, commandType: CommandType.Text).OrderByDescending(s => s.CreatedDate).ToList();
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("input", input);
+            parameters.Add("departmentId", departmentId);
+            parameters.Add("typeId", typeId);
+
+            var entities = _dbConnection.Query<Asset>($"Proc_FilterAsset",param: parameters, commandType: CommandType.StoredProcedure).OrderByDescending(s => s.CreatedDate).ToList();
 
             return entities;    
         }

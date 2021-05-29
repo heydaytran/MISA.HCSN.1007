@@ -1,6 +1,40 @@
 <template>
   <div class="div-container content" id="content">
     <div class="div-container">
+      <div class="panel-feature-top">
+        <div class="panel-feature">
+          <div class="feature-left">
+            <div class="text-title">
+              <div class="text">Ghi tăng tài sản</div>
+            </div>
+            <div class="button-refresh">
+              <div class="hover-pointer icon"></div>
+            </div>
+          </div>
+          <div class="feature-right">
+            <div
+              class="btn-add-asset btn features-pane-item"
+              @click="showDialog('insert', 0)"
+            >
+              Thêm
+            </div>
+            <div class="hover-pointer button-option-view" >
+              <div class="hover-pointer icon-view"  v-bind:class="{ 'icon-view-all' : viewAll, 'icon-view-detail': !viewAll }"></div>
+              <div class="hover-pointer icon-arrow"></div>
+              <div class="menu-option-view">
+                <div class="item-option option-full"  @click="changeVisual('all')">
+                  <div v-if="viewAll" class="hover-pointer icon-chosen"></div>
+                  <div class="hover-pointer icon-view-all"></div>
+                </div>
+                <div class="item-option option-detail" @click="changeVisual('detail')">
+                  <div v-if="!viewAll"  class="hover-pointer icon-chosen"></div>
+                  <div class="hover-pointer icon-view-detail"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="content-nav">
         <v-alert
           id="success-dialog"
@@ -62,7 +96,7 @@
               id="assetSearchBox"
               class="input-search"
               type="text"
-              placeholder="Tìm kiếm theo tên, mã tài sản. "
+              placeholder="Tìm kiếm. "
               v-model="inputSearch"
               @change="
                 getAsset(
@@ -76,21 +110,20 @@
           </div>
 
           <div class="features-pane-right">
-            <div
-              class="btn-add-asset btn features-pane-item"
-              @click="showDialog('insert', 0)"
-            >
-              Thêm
+            <div class="button-print">
+              <div class="icon"></div>
             </div>
-
-            <div
-              @click="getAsset('')"
-              class="btn icon-refresh features-pane-item"
-            ></div>
+           
             <div
               id="preventLeftClick"
               class="btn icon-trash features-pane-item"
               @click="showDeleteDialog()"
+            ></div>
+             <div
+              class="btn icon-print features-pane-item"
+            ></div>
+             <div
+              class="btn icon-more features-pane-item"
             ></div>
           </div>
         </div>
@@ -113,7 +146,13 @@
           </colgroup>
           <thead>
             <tr>
+              <th>
+                <div class="checkbox-icon">
+                  <input type="checkbox" />
+                </div>
+              </th>
               <th style="text-align: left">STT</th>
+
               <th
                 sortProp="code"
                 sortOrder="asc"
@@ -121,7 +160,25 @@
                 class="hover-pointer"
                 style="text-align: left"
               >
-                NGÀY GHI GIẢM
+                SỐ CHỨNG TỪ
+              </th>
+              <th
+                sortProp="code"
+                sortOrder="asc"
+                id="columnAssetCode"
+                class="hover-pointer"
+                style="text-align: left"
+              >
+                NGÀY CHỨNG TỪ
+              </th>
+              <th
+                sortProp="code"
+                sortOrder="asc"
+                id="columnAssetCode"
+                class="hover-pointer"
+                style="text-align: left"
+              >
+                NGÀY GHI TĂNG
               </th>
               <th
                 sortProp="name"
@@ -130,16 +187,7 @@
                 class="hover-pointer"
                 style="text-align: left"
               >
-               SỐ CHỨNG TỪ
-              </th>
-              <th
-                sortProp="type"
-                style="text-align: left"
-                sortOrder="asc"
-                id="columnAssetType"
-                class="hover-pointer"
-              >
-                LÝ DO GHI GIẢM
+                NỘI DUNG
               </th>
               <th
                 sortProp="department"
@@ -148,15 +196,15 @@
                 class="hover-pointer"
                 style="text-align: left"
               >
-                GIÁ TRỊ CÒN LẠI
+                TỔNG NGUYÊN GIÁ
               </th>
-             
+
               <th style="text-align: left">chức năng</th>
             </tr>
           </thead>
 
           <tbody>
-            <tr
+            <!-- <tr
               v-for="(asset, index) in listAsset"
               :key="asset.assetId"
               v-bind:class="selectedRow(asset.assetId) ? 'selected-row' : ''"
@@ -168,7 +216,73 @@
               <td>{{ asset.assetName }}</td>
               <td>{{ asset.assetTypeName }}</td>
               <td>{{ asset.departmentName }}</td>
-              
+
+              <td class="no-border-right">
+                <div class="features-box">
+                  <div
+                    :id="'tableRow' + index + '_edit'"
+                    class="table-icon icon-edit-pen"
+                    @click="showDialog('update', asset.assetId)"
+                    title="Sửa"
+                  ></div>
+                  <div
+                    id="preventLeftClick"
+                    class="table-icon icon-trash-table"
+                    @click="showDeleteDialog('inRow')"
+                    title="Xóa"
+                  ></div>
+                  <div
+                    class="table-icon icon-refresh-time"
+                    title="Chức năng chưa phát triển"
+                  ></div>
+                </div>
+              </td>
+            </tr> -->
+            <tr>
+              <td>
+                <div class="checkbox-icon">
+                  <input type="checkbox" />
+                </div>
+              </td>
+              <td>hello</td>
+              <td>hello</td>
+              <td>hello</td>
+              <td>hello</td>
+              <td>hello</td>
+              <td>hello</td>
+              <td class="no-border-right">
+                <div class="features-box">
+                  <div
+                    :id="'tableRow' + index + '_edit'"
+                    class="table-icon icon-edit-pen"
+                    @click="showDialog('update', asset.assetId)"
+                    title="Sửa"
+                  ></div>
+                  <div
+                    id="preventLeftClick"
+                    class="table-icon icon-trash-table"
+                    @click="showDeleteDialog('inRow')"
+                    title="Xóa"
+                  ></div>
+                  <div
+                    class="table-icon icon-refresh-time"
+                    title="Chức năng chưa phát triển"
+                  ></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="checkbox-icon">
+                  <input type="checkbox" />
+                </div>
+              </td>
+              <td>hello</td>
+              <td>hello</td>
+              <td>hello</td>
+              <td>hello</td>
+              <td>hello</td>
+              <td>hello</td>
               <td class="no-border-right">
                 <div class="features-box">
                   <div
@@ -263,14 +377,14 @@
       <div id="assetPopup"></div>
     </div>
 
-    <ModalCreateAsset
+    <ModalCreate
       ref="ModalCreateAsset_ref"
       :listDepartment="listDepartment"
       :listAssetType="listAssetType"
       :formMode="formMode"
       :assetIdUpdate="assetIdUpdate"
       @reload="reload"
-      @msgAlert = "msgAlert"
+      @msgAlert="msgAlert"
     />
     <ModalDeleteAsset
       @reload="reload"
@@ -281,7 +395,7 @@
 </template>
 
 <script>
-import ModalCreateAsset from "../../components/modal/ModalCreateAsset.vue";
+import ModalCreate from "../../components/modal/increaseAssetModal/ModalCreate.vue";
 import ModalDeleteAsset from "../../components/modal/ModalDeleteAsset.vue";
 import BaseLoading from "../../components/common/BaseLoading.vue";
 import axios from "axios";
@@ -289,7 +403,7 @@ import axios from "axios";
 export default {
   components: {
     ModalDeleteAsset,
-    ModalCreateAsset,
+    ModalCreate,
     BaseLoading,
   },
   props: {
@@ -340,18 +454,17 @@ export default {
         idType: null,
         allAsset: "tất cả",
       },
-     
+      viewAll:true
     };
   },
   methods: {
-    msgAlert(text, value)
-    {
-      this.showWarning = value
-      this.alerMsg = text
-      var res = this
+    msgAlert(text, value) {
+      this.showWarning = value;
+      this.alerMsg = text;
+      var res = this;
 
-         setTimeout(() => {
-       res.showWarning = false
+      setTimeout(() => {
+        res.showWarning = false;
       }, 3000);
     },
     //todo gửi option tìm kiếm lên combobox tại header
@@ -437,15 +550,12 @@ export default {
     //     });
     // },
 
-
-    async getAsset()
-    {
-      await axios.get('http://localhost:56697/api/v1/')
+    async getAsset() {
+      await axios.get("http://localhost:56697/api/v1/");
     },
 
     /// todo hiển thị dialog thêm
     showDialog(text, Id) {
-      
       document.getElementById("ctxMenu").style.display = "none";
       if (text == "insert") {
         this.formMode = "insert";
@@ -647,6 +757,24 @@ export default {
         this.getAsset();
       }
     },
+
+    // todo thay đổi khung nhìn
+    changeVisual(text)
+    {
+      if(text == 'all')
+      {
+        this.viewAll = true
+        document.getElementsByClassName('option-full')[0].style.background='#f5f5f5'
+        document.getElementsByClassName('option-detail')[0].style.background='white'
+        
+      }
+      else {
+        this.viewAll = false
+        document.getElementsByClassName('option-full')[0].style.background='white'
+        document.getElementsByClassName('option-detail')[0].style.background='#f5f5f5'
+        
+      }
+    }
   },
   filters: {
     // todo định dạng kiểu tiền tệ cho nguyên giá
@@ -1184,4 +1312,246 @@ table {
   height: 28px;
   width: 28px;
 }
+.features-pane-top {
+  height: 34px;
+  background: green;
+  width: 100%;
+}
+
+.content-nav {
+  padding: 10px;
+  height: auto;
+  margin: 0 16px;
+}
+.content-nav .features-pane {
+  margin: 0px;
+}
+.content-grid {
+  margin: 0 16px;
+}
+.panel-feature-top {
+  height: 54px;
+  position: relative;
+  padding: 10px 16px;
+}
+.panel-feature-top .panel-feature {
+  height: 100%;
+  display: flex;
+}
+.panel-feature-top .panel-feature .feature-left {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  font-weight: 700;
+}
+.panel-feature-top .panel-feature .feature-right {
+  position: absolute;
+  right: 0;
+  display: flex;
+  align-items: center;
+}
+.button-refresh {
+  padding-left: 20px;
+}
+.button-refresh .icon {
+  height: 20px;
+  width: 20px;
+  background-image: url("../../assets/icon/refresh1.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.input-search {
+  padding: 8px 46px 8px 43px;
+  font-size: 12px;
+}
+
+.content-nav .features-pane .features-pane-left .icon-search {
+  position: absolute;
+  /* right: 45px; */
+  left: 0px;
+}
+.content-nav .features-pane .features-pane-left {
+  position: relative;
+}
+.content-nav .features-pane input {
+  width: 236px;
+}
+.content .div-container {
+  background: #f5f6fa;
+}
+.content-nav {
+  background: white;
+}
+table thead tr th {
+  background: #f5f6fa;
+}
+table tbody {
+  background: white;
+}
+.feature-right .button-option-view {
+  height: 34px;
+  width: 68px;
+  margin-left: 10px;
+  box-sizing: border-box;
+  background: white;
+  border-radius: 3px;
+  padding-left: 14px;
+  display: flex;
+  align-items: center;
+}
+.panel-feature-top .panel-feature {
+  height: 100%;
+  display: flex;
+  position: relative;
+}
+
+.panel-feature-top .panel-feature .icon-arrow {
+  background-image: url("../../assets/UI/Icon/i_arrow_up_small.svg");
+  background-repeat: no-repeat;
+  background-size: 9px;
+  transform: rotate(0deg);
+  background-position: center;
+  width: 10px;
+  height: 10px;
+  opacity: 0.6;
+  margin-left: 12px;
+}
+
+.feature-right .button-option-view .menu-option-view {
+  height: 52px;
+  width: 68px;
+  margin-left: 10px;
+  box-sizing: border-box;
+  background: white;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  top: 35px;
+  z-index: 1;
+  box-shadow: 2px 2px 10px #c3c3c3;
+  padding-top: 5px;
+}
+ .icon-view-all {
+  height: 20px;
+  width: 20px;
+  background-image: url("../../assets/icon/view-full.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: absolute;
+  right: -9px;
+}
+
+.icon-view-detail {
+  height: 20px;
+  width: 20px;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAZCAYAAAA14t7uAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEuSURBVEhL7ZIxi4MwGIbvX1fo5OLWycmCqIsILgodOhREBN0cFBwchDrUqVAQKqL1PSKh11ykl+EObvCBd8v78OVLPvBHrOInnPjxeOB+v6NtW6EMw0CbLIx4HEekaQrTNKFpmlBc10Xf99TwBTfx7XZDlmVIkkQodV3TJgsjnqYJ1+sVZVmiKAqhnM/neX3fYcTkAJH6vg/HcYQSBMHinrlVdF2HpmnmK4qErG4JTpznOWzbhmEYQvE8jzZZOPHhcICiKLAsa/Hqr1FVFdvtljZZODGZQNd1XC6X+T+/SxiGkCSJNlkWxeSK5Hf8RBzH/0S83+9RVdUsf5fT6YTNZkObLJz4eDzOj0fkr6+/lN1uB1mWaZOFE5NJiZxMLpIoimiThRP/Fqv4ySqmAJ+v/hYupF8OGwAAAABJRU5ErkJggg==);
+  background-repeat: no-repeat;
+  background-size: 28px 28px;
+  background-position: center;
+  position: absolute;
+  right: -9px;
+}
+.panel-feature-top .panel-feature .icon-chosen {
+  height: 20px;
+  width: 20px;
+  background-image: url("../../assets/icon/chosen-view.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.panel-feature-top .panel-feature .item-option {
+  display: flex;
+  cursor: pointer;
+}
+.panel-feature-top .panel-feature .icon-view-detail{
+    position: absolute;
+    right: -9px;
+}
+.panel-feature-top .panel-feature .item-option {
+    display: flex;
+    width: 40px;
+    position: relative;
+}
+
+ .option-detail{
+  margin-top:5px;
+}
+
+.panel-feature-top .panel-feature .item-option{
+    width: 100%;
+    height: 50%;
+    position: relative;
+}
+.panel-feature-top .panel-feature .icon-chosen{
+    height: 20px;
+    width: 20px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKpSURBVEhL1ZTfS1NhGMf7N7oMoruwbsIiCKIUL4RCCOwuvFBKKA203zbN8EdFJKWUXRTO1mJz0zZ/m87MmmNay9zS1jbd3OZ+nZ3t+tv7vLHDzs4xIojo4nPxvs/zfN/3fJ/nPTuy2Sz+Bv9WOJ5OIpiMIiUKqnE1thVOpFMY9znR7RrG1Q99qJt7iib7C/Quj8EWcKnW5KMqHEhEcMuhx3HLTZSP3EaNrQcN889QNf0QZdYWvv/g4xBCyS1FbQ6FsD8RxsmxNhwyX0aPawTO0Cq8sRDW2WFrsQ3Ygx7cWTRhn/EiamcfY4NZVKhBKITpk3frz2HCt8jtKIwTMea5YXUORYZ6tDpeqebIhLUr09ijr8XA2rwsSY2UmGZ2vMYBUwOGvQ5FXCZ8drYHx5h/+Xv5JNICdB4bvzGtXeHv3O8Op1GRKwkn2SgdGbqGG/Z+vs5kMtgSEtxfgd2OGqVZ0KHYfAnvgys8h/pxfq4X1TPdPCenRUjC7qifF9E40VrMiNznM2+6YFx9h+aFlyixaNDnnpZENlMxtDsNOD15D774piRKSMLU3cODV9C5OMDXIruxI/SVTUg79rMJKBtuwfOVKcSEnzbkamjG6fBIKi7tEzKPK9nJlZN3pTW9tCn/EhrZDNNNC4vd0QAqxjpw3a6V7RMy4S7W5SJDHd6uL0t7JE4zTH7n5wqiiH73DA6yedd7ZmUxQibsZz5VjLej1NoMz1ZAllgI2VRi1aDa9oj/RwrjMmGCCuiBkKfzG19ksRzjrKnF5kYctTThU9irmqMQJtzstqXsNrt0NbzjTz6PwsQeDVlVPtKKndoqnJroxLdYUFGbQ1WYiApx3F8axInRNvZfqMdewwU+HdRcOkitJp9thfMhD5cjPkUDf8VvCf8J/5twFj8AZJXbCDaq+F8AAAAASUVORK5CYII=);
+    background-repeat: no-repeat;
+    background-size: contain;
+    position: absolute;
+    left: 12px;
+}
+.panel-feature-top .panel-feature .icon-view-all {
+    right: 4px;
+}
+.panel-feature-top .panel-feature .icon-view-detail {
+    position: absolute;
+    right: 4px;
+}
+
+.menu-option-view .item-option:hover{
+  background: #f5f5f5;
+}
+.menu-option-view .option-full{
+  background: #f5f5f5;
+}
+.panel-feature-top .panel-feature .icon-view {
+  position: inherit;
+}
+.menu-option-view{
+  display: none!important;;
+}
+.button-option-view:hover .menu-option-view{
+  display: block!important;
+}
+.content-nav .features-pane input{
+    border-radius: 2px;
+}
+.icon-print{
+  background-image: url("../../assets/icon/print-removebg.png");
+  background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.8;
+}
+.content-nav .features-pane .btn {
+    padding: 16px!important;
+    /* width: 34px; */
+}
+.icon-more{
+  background-image: url("../../assets/icon/option-more.png");
+background-repeat: no-repeat;
+    background-position: center;
+}
+.content-nav {
+    background: white;
+     border: 1px solid #d0cece;
+    box-shadow: 0px 0px 20px #bbb6b6;
+    box-sizing: border-box;
+    border-bottom:none ;
+}
+.content-grid {
+    margin: 0 16px;
+    box-sizing: border-box;
+    border: 1px solid #d0cece;
+    box-shadow: 0px 12px 20px #bbb6b6;
+}
+table tbody tr td{
+  border-right: none;
+}
+
 </style>

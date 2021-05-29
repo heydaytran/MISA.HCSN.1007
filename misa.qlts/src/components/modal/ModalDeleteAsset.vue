@@ -160,8 +160,13 @@ export default {
     /* width: 20px; */
     /* height: 20px; */
     position: absolute;
-    right: 3px;
-    top: 0px;
+    right: 12px;
+    top: 5px;
     cursor: pointer;
+}
+
+.modal .modal-content .modal-header{
+    display: flex;
+    align-items: center;
 }
 </style>

@@ -4,8 +4,10 @@
       <div class="modal-background"></div>
       <div class="modal-content">
         <div class="header">
-          <div v-if="formMode == 'insert'" class="title">Thêm mới tài sản</div>
-          <div v-else class="title">Sửa tài sản</div>
+          <div v-if="formMode == 'insert'" class="title">
+            Thêm chứng từ ghi tăng
+          </div>
+          <div v-else class="title">Sửa chứng từ ghi tăng</div>
 
           <div class="header-right">
             <div class="icon-help btn btn-help" title="Hỗ trợ"></div>
@@ -18,18 +20,98 @@
         </div>
 
         <div class="content">
-          <div class="input-field">
-            <label for="">Mã tài sản <span style="color:red">(*)</span></label>
-            <input
-              onClick="this.select();"
-              id="assetInput1"
-              type="text"
-              maxlength="20"
-              class="input-one-third"
-              v-model="asset.assetCode"
-              @keyup="validateAssetCode()"
-              @blur="validateAssetCode()"
-            />
+          <div class="modal-container input-container container-top">
+            <div class="top-label">
+              <label for="">Thông tin chứng từ </label>
+            </div>
+            <div class="container-box input-box">
+              <div class="input-row">
+                <div class="input-field">
+                  <label for=""
+                    >Mã tài sản <span style="color: red">(*)</span></label
+                  >
+                  <input
+                    onClick="this.select();"
+                    id="assetInput1"
+                    type="text"
+                    maxlength="20"
+                    class="input-one-third"
+                    v-model="asset.assetCode"
+                    @keyup="validateAssetCode()"
+                    @blur="validateAssetCode()"
+                  />
+                </div>
+                <div class="input-field">
+                    <label for=""
+                    >Ngày chứng từ <span style="color: red">(*)</span></label
+                  >
+                  <DatePicker
+                    class="input-sm"
+                    input-class="datetime"
+                    placeholder="__/__/____"
+                    v-model="asset.createdDate"
+                    type="date"
+                    format="DD/MM/YYYY"
+                    value-type="YYYY-MM-DD"
+                    :lang="lang"
+                    :disabled-date="disabledAfterToday"
+                    @input-error="showWarning('Ngày sai định dạng', true)"
+                  >
+                    <template v-slot:header="{ emit }">
+                      <button
+                        class="mx-btn mx-btn-text"
+                        @click="emit(new Date())"
+                      >
+                        Today
+                      </button>
+                    </template>
+                  </DatePicker>
+                </div>
+                 <div class="input-field">
+                     <label for=""
+                    >Ngày ghi tăng <span style="color: red">(*)</span></label
+                  >
+                  <DatePicker
+                    class="input-sm"
+                    input-class="datetime"
+                    placeholder="__/__/____"
+                    v-model="asset.createdDate"
+                    type="date"
+                    format="DD/MM/YYYY"
+                    value-type="YYYY-MM-DD"
+                    :lang="lang"
+                    :disabled-date="disabledAfterToday"
+                    @input-error="showWarning('Ngày sai định dạng', true)"
+                  >
+                    <template v-slot:header="{ emit }">
+                      <button
+                        class="mx-btn mx-btn-text"
+                        @click="emit(new Date())"
+                      >
+                        Today
+                      </button>
+                    </template>
+                  </DatePicker>
+                </div>
+              </div>
+              <div class="input-row">
+                <div class="input-field">
+                  <label for=""
+                    >Ghi chú <span style="color: red">(*)</span></label
+                  >
+                  <input
+                    onClick="this.select();"
+                    id="assetInput1"
+                    type="text"
+                    maxlength="20"
+                    class="input-one-third"
+                    v-model="asset.assetCode"
+                    @keyup="validateAssetCode()"
+                    @blur="validateAssetCode()"
+                  />
+                </div>
+              </div>
+            </div>
 
             <div id="assetInput1_warning" class="validate-warning">
               Thông tin bắt buộc nhập
@@ -43,141 +125,209 @@
               Mã tài sản bị trùng
             </div>
           </div>
-          <div class="input-field">
-            <label for="">Tên tài sản <span style="color:red">(*)</span></label>
-            <input
-              id="assetInput2"
-              maxlength="255"
-              class="input-two-third"
-              type="text"
-              @keyup="validateAssetName()"
-              @blur="validateAssetName()"
-              v-model="asset.assetName"
-            />
 
-            <div id="assetInput2_warning" class="validate-warning">
+          <div class="modal-container container-below">
+            <div class="below-label">
+              <label for="">Thông tin tài sản ghi tăng </label>
+            </div>
+            <div class="container-box grid-box">
+              <div class="panel-header">
+                <div class="panel-fied"></div>
+              </div>
+              <div class="content-grid grid">
+                <table class="table-asset" id="tableAsset">
+                  <colgroup>
+                    <col width="50" />
+                    <!-- <col width="120" /> -->
+                    <col width="120" />
+                    <col min-width="800" />
+                    <col min-width="200" />
+                    <col min-width="500" />
+                    <col width="150" />
+                    <col width="100" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>
+                        <div class="checkbox-icon">
+                          <input type="checkbox" />
+                        </div>
+                      </th>
+                      <th style="text-align: left">STT</th>
+
+                      <th
+                        sortProp="code"
+                        sortOrder="asc"
+                        id="columnAssetCode"
+                        class="hover-pointer"
+                        style="text-align: left"
+                      >
+                        SỐ CHỨNG TỪ
+                      </th>
+                      <th
+                        sortProp="code"
+                        sortOrder="asc"
+                        id="columnAssetCode"
+                        class="hover-pointer"
+                        style="text-align: left"
+                      >
+                        NGÀY CHỨNG TỪ
+                      </th>
+                      <th
+                        sortProp="code"
+                        sortOrder="asc"
+                        id="columnAssetCode"
+                        class="hover-pointer"
+                        style="text-align: left"
+                      >
+                        NGÀY GHI TĂNG
+                      </th>
+                      <th
+                        sortProp="name"
+                        sortOrder="asc"
+                        id="columnAssetName"
+                        class="hover-pointer"
+                        style="text-align: left"
+                      >
+                        NỘI DUNG
+                      </th>
+                      <th
+                        sortProp="department"
+                        sortOrder="asc"
+                        id="columnDepartment"
+                        class="hover-pointer"
+                        style="text-align: left"
+                      >
+                        TỔNG NGUYÊN GIÁ
+                      </th>
+
+                      <th style="text-align: left">chức năng</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <!-- <tr
+              v-for="(asset, index) in listAsset"
+              :key="asset.assetId"
+              v-bind:class="selectedRow(asset.assetId) ? 'selected-row' : ''"
+              @click="selectRow(asset.assetId, $event)"
+              @click.right="showContexMenu(asset.assetId, $event)"
+            >
+              <td class="no-border-left">{{ index + 1 }}</td>
+              <td>{{ asset.assetCode }}</td>
+              <td>{{ asset.assetName }}</td>
+              <td>{{ asset.assetTypeName }}</td>
+              <td>{{ asset.departmentName }}</td>
+
+              <td class="no-border-right">
+                <div class="features-box">
+                  <div
+                    :id="'tableRow' + index + '_edit'"
+                    class="table-icon icon-edit-pen"
+                    @click="showDialog('update', asset.assetId)"
+                    title="Sửa"
+                  ></div>
+                  <div
+                    id="preventLeftClick"
+                    class="table-icon icon-trash-table"
+                    @click="showDeleteDialog('inRow')"
+                    title="Xóa"
+                  ></div>
+                  <div
+                    class="table-icon icon-refresh-time"
+                    title="Chức năng chưa phát triển"
+                  ></div>
+                </div>
+              </td>
+            </tr> -->
+                    <tr>
+                      <td>
+                        <div class="checkbox-icon">
+                          <input type="checkbox" />
+                        </div>
+                      </td>
+                      <td>hello</td>
+                      <td>hello</td>
+                      <td>hello</td>
+                      <td>hello</td>
+                      <td>hello</td>
+                      <td>hello</td>
+                      <td class="no-border-right">
+                        <div class="features-box">
+                          <div
+                            :id="'tableRow' + index + '_edit'"
+                            class="table-icon icon-edit-pen"
+                            @click="showDialog('update', asset.assetId)"
+                            title="Sửa"
+                          ></div>
+                          <div
+                            id="preventLeftClick"
+                            class="table-icon icon-trash-table"
+                            @click="showDeleteDialog('inRow')"
+                            title="Xóa"
+                          ></div>
+                          <div
+                            class="table-icon icon-refresh-time"
+                            title="Chức năng chưa phát triển"
+                          ></div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="checkbox-icon">
+                          <input type="checkbox" />
+                        </div>
+                      </td>
+                      <td>hello</td>
+                      <td>hello</td>
+                      <td>hello</td>
+                      <td>hello</td>
+                      <td>hello</td>
+                      <td>hello</td>
+                      <td class="no-border-right">
+                        <div class="features-box">
+                          <div
+                            :id="'tableRow' + index + '_edit'"
+                            class="table-icon icon-edit-pen"
+                            @click="showDialog('update', asset.assetId)"
+                            title="Sửa"
+                          ></div>
+                          <div
+                            id="preventLeftClick"
+                            class="table-icon icon-trash-table"
+                            @click="showDeleteDialog('inRow')"
+                            title="Xóa"
+                          ></div>
+                          <div
+                            class="table-icon icon-refresh-time"
+                            title="Chức năng chưa phát triển"
+                          ></div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                  <BaseLoading ref="BaseLoading_ref" />
+
+                  <div v-show="getEmty" class="loading-emty">
+                    Không có dữ liệu
+                  </div>
+                </table>
+              </div>
+            </div>
+
+            <div id="assetInput1_warning" class="validate-warning">
               Thông tin bắt buộc nhập
             </div>
+            <div
+              v-show="dup"
+              style="display: block"
+              id="assetInput1_warning"
+              class="validate-warning"
+            >
+              Mã tài sản bị trùng
+            </div>
           </div>
-          <div class="clear-float"></div>
-          <div class="input-field">
-            <label>Mã phòng ban</label>
-            <v-autocomplete
-              tag="div"
-              id="assetInput3"
-              class="custom-autocomplete input-one-third"
-              :items="listDepartment"
-              item-value="departmentId"
-              item-text="departmentCode"
-              v-model="asset.departmentId"
-            ></v-autocomplete>
-          </div>
-          <div class="input-field">
-            <label for="">Tên phòng ban</label>
-            <input
-              class="input-black input-two-third"
-              tabindex="-1"
-              type="text"
-              name=""
-              v-model="asset.departmentName"
-            />
-          </div>
-          <div class="clear-float"></div>
-          <div class="input-field">
-            <label for="">Mã loại tài sản</label>
-            <v-autocomplete
-              id="assetInput4"
-              class="custom-autocomplete input-one-third"
-              :items="listAssetType"
-              item-value="assetTypeId"
-              item-text="assetTypeCode"
-              v-model="asset.assetTypeId"
-            ></v-autocomplete>
-          </div>
-          <div class="input-field">
-            <label for="">Tên loại tài sản</label>
-            <input
-              class="input-black input-two-third"
-              tabindex="-1"
-              type="text"
-              name=""
-              v-model="asset.assetTypeName"
-            />
-          </div>
-          <div class="clear-float"></div>
-          <div class="input-field">
-            <label for="">Thời gian sử dụng (năm)</label>
-            <input
-              id="assetInput5"
-              class="input-one-third"
-              maxlength="4"
-              type="text"
-              name=""
-              @keypress="formatNumber($event)"
-              v-model="asset.timeUse"
-            />
-          </div>
-          <div class="input-field">
-            <label for="">Tỷ lệ hao mòn (%)</label>
-            <input
-              id="assetInput6"
-              class="input-one-third"
-              maxlength="2"
-              type="text"
-              name=""
-              @keypress="formatNumber($event)"
-              v-model="asset.wearRate"
-            />
-          </div>
-          <div class="input-field">
-            <label for="">Nguyên giá</label>
-            <input
-              id="assetInput7"
-              maxlength="13"
-              class="input-one-third"
-              type="text"
-              name=""
-              style="text-align: right"
-              :value="formatedMoney"
-              @keypress="formatNumber($event)"
-              @keyup="updateInput('', $event)"
-            />
-          </div>
-          <div class="clear-float"></div>
-          <div class="input-field">
-            <label for="">Giá trị hao mòn năm</label>
-            <input
-              style="text-align: right"
-              id="assetInput8"
-              maxlength="10"
-              class="input-one-third"
-              type="text"
-              name=""
-              :value="formatedWearValue"
-              @keypress="formatNumber($event)"
-              @keyup="updateInput('wearValue', $event)"
-            />
-          </div>
-          <!-- <DatePicker
-            class="input-sm"
-            input-class="datetime" 
-            placeholder="__/__/____"
-            v-model="asset.createdDate" 
-            type="date"
-            format="DD/MM/YYYY"
-           
-            value-type="YYYY-MM-DD"
-            
-            :lang="lang"
-            :disabled-date="disabledAfterToday"
-            @input-error="showWarning('Ngày sai định dạng', true)"
-          >
-            <template v-slot:header="{ emit }">
-              <button class="mx-btn mx-btn-text" @click="emit(new Date())">
-                Today
-              </button>
-            </template>
-          </DatePicker> -->
         </div>
         <div class="footer">
           <div class="btn btn-cancel" tabindex="0" @click="hide()">Hủy</div>
@@ -193,8 +343,11 @@
 
 <script>
 import axios from "axios";
-import DatePicker from "vue2-datepicker";
-//  import 'vue2-datepicker/locale/vi';
+
+// import 'vue2-datepicker/locale/vi';
+
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
 
 export default {
   components: {
@@ -298,14 +451,14 @@ export default {
     async show() {
       var res = this;
       this.isActive = true;
-      this.dup = false
+      this.dup = false;
 
       var warning = document.getElementById("assetInput1");
 
       warning.classList.remove("borderRed");
       warning.classList.remove("hover-validate");
 
-       var warning1 = document.getElementById("assetInput2");
+      var warning1 = document.getElementById("assetInput2");
 
       warning1.classList.remove("borderRed");
       warning1.classList.remove("hover-validate");
@@ -351,14 +504,13 @@ export default {
       this.isActive = false;
       document.getElementsByClassName("body-right")[0].style.zIndex = "0";
     },
-    
-// todo select tất cả nội dung ô input khi click
-      selectAll()
-    {
-      document.getElementsByTagName("input").forEach(element => {
-        element.addEventListener("click", ()=>{
-          element.select()
-        })
+
+    // todo select tất cả nội dung ô input khi click
+    selectAll() {
+      document.getElementsByTagName("input").forEach((element) => {
+        element.addEventListener("click", () => {
+          element.select();
+        });
       });
     },
 
@@ -452,7 +604,7 @@ export default {
 
     // validate trống trường dữ liệu mã tài sản
     async validateAssetCode() {
-      this.dup = false
+      this.dup = false;
       var warning = document.getElementById("assetInput1");
       if (this.asset.assetCode == null || this.asset.assetCode == "") {
         // warning.style.border = "1px solid red";
@@ -510,7 +662,7 @@ export default {
               // nếu không gặp lỗi badrequest
               if (respone.data.errorCode == 400) {
                 var warning = document.getElementById("assetInput1");
-                res.dup = true
+                res.dup = true;
                 warning.classList.add("borderRed");
 
                 res.$emit("reload", false);
@@ -520,10 +672,10 @@ export default {
                 parseInt(res.asset.originalPrice) <=
                   parseInt(res.asset.wearValue)
               ) {
-                res.dup =false
+                res.dup = false;
                 return;
               } else {
-                res.dup =false
+                res.dup = false;
                 res.hide();
                 res.$emit("reload", true);
               }
@@ -543,11 +695,11 @@ export default {
                 res.hide();
                 res.$emit("reload", true);
               } else {
-                 res.dup = true
+                res.dup = true;
                 document
                   .getElementById("assetInput1")
                   .classList.add("borderRed");
-                
+
                 res.$emit("reload", false);
                 return;
               }
@@ -591,15 +743,18 @@ export default {
     },
   },
   filters: {},
-  mounted()
-  {
-  this.selectAll()
-  }
+  mounted() {
+    this.selectAll();
+  },
 };
 </script>
 
 
+
+
+
 <style lang="scss" scoped>
+
 input {
   padding: 8px 16px;
   outline: none;
@@ -780,20 +935,38 @@ input.required {
   text-align: right;
 }
 
-input[type="date"] {
-  opacity: 1;
-  display: block;
-  background: url(../../assets/icon/calendar.svg) no-repeat;
-  width: 30px;
-  height: 30px;
-  border-width: thin;
-  margin-top: 20px;
-  transform: translateX(5px);
+.modal-content {
+  width: 880px;
 }
-// @import url("../../style/scss/common.scss");
-// @import url("../../style/scss/icon.scss");
-// @import url("../../style/scss/button.scss");
-// @import url("./../../style/scss/combobox.scss");
-// @import url("../../style/scss/table.scss");
-//  @import url("../../style/scss/date_picker.scss");
+.modal-container {
+  width: 100%;
+  height: 50%;
+}
+.modal-content .header {
+  border-bottom: 1px solid;
+  background: white;
+}
+.modal-content {
+  background: #f5f6fa;
+}
+.container-box {
+  height: 100%;
+}
+
+.below-label {
+  height: 34px;
+}
+.top-label {
+  height: 34px;
+}
+.container-box {
+  background: white;
+}
+.container-below {
+  box-sizing: border-box;
+}
+.container-top {
+  padding-bottom: 40px;
+}
+
 </style>

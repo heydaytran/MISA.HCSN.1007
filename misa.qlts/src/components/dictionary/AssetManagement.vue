@@ -72,7 +72,7 @@
                 )
               "
             />
-            <div class="icon-search"></div>
+            <div class="icon-search" title="Tìm kiếm"></div>
           </div>
 
           <div class="features-pane-right">
@@ -85,12 +85,13 @@
 
             <div
               @click="getAsset('')"
-              class="btn icon-refresh features-pane-item"
+              class="btn icon-refresh features-pane-item" title="Tải lại"
             ></div>
             <div
               id="preventLeftClick"
               class="btn icon-trash features-pane-item"
               @click="showDeleteDialog()"
+              title="Xóa nhiều bản ghi"
             ></div>
           </div>
         </div>
@@ -170,6 +171,7 @@
               v-bind:class="selectedRow(asset.assetId) ? 'selected-row' : ''"
               @click="selectRow(asset.assetId, $event)"
               @click.right="showContexMenu(asset.assetId, $event)"
+              @dblclick="showDialog('update', asset.assetId)"
             >
               <td class="no-border-left">{{ index + 1 }}</td>
               <td>{{ asset.assetCode }}</td>
@@ -230,27 +232,32 @@
           <div class="paging-toolbar">
             <div class="leftchild">
               <div
+              title="Trang đầu"
                 class="p-button first-page"
-                @click="paging.pageNumber = 1"
+                @click="firstPage()"
               ></div>
-              <div class="p-button prev-page" @click="backPage()"></div>
-              <div style="margin: 0 16px 0 4px">Trang</div>
+              <div title="Trang trước" class="p-button prev-page" @click="backPage()"></div>
+              <div >Trang</div>
               <input
                 type="number"
                 class="text-pagebumber"
                 v-model="paging.pageNumber"
+                @change="reloadPage()"
+               
               />
-              <div style="margin: 0 16px 0 6px">
+              <div >
                 Trên {{ paging.amountPage }}
               </div>
 
-              <div class="p-button next-page" @click="nextPage()"></div>
+              <div title="Trang sau" class="p-button next-page" @click="nextPage()"></div>
               <div
+              title="Trang cuối"
                 class="p-button last-page"
-                @click="paging.pageNumber = paging.amountPage"
+                @click="lastPage()"
               ></div>
-              <div class="p-button refresh" @click="getAsset()"></div>
+              <div title="Tải lại" class="p-button refresh" @click="getAsset()"></div>
               <select
+              title="Số bản ghi trên 1 trang"
                 name=""
                 id=""
                 class="select-quantitypage"
@@ -378,6 +385,8 @@ export default {
      * Author: TVThinh (12/5/2021)
      */
     async getAsset(text, idDepartment, idType) {
+
+      
       // xử lý filter trên thanh combobox
       if (idDepartment == undefined || idDepartment == "")
         this.comboxFilter.idDepartment = "";
@@ -391,7 +400,9 @@ export default {
         this.comboxFilter.idType = idType;
       }
 
-      if (text == "filter") this.paging.pageNumber = 1;
+      if (text == "filter") {
+        this.paging.pageNumber = 1
+      }
 
       var res = this;
       this.listSelectRow = [];
@@ -445,6 +456,12 @@ export default {
             res.getEmty = true; // b
           }, 4000);
         });
+
+        //select bản ghi đầu tiên
+        setTimeout(() => {
+          this.listSelectRow.push(this.listAssetId[0])
+        }, 0);
+
     },
 
     /// todo hiển thị dialog thêm
@@ -499,7 +516,7 @@ export default {
         this.showSuccess = true;
         setTimeout(() => {
           this.showSuccess = false;
-        }, 6000);
+        }, 3000);
       }
     },
 
@@ -568,7 +585,6 @@ export default {
       document.addEventListener("keydown", function (e) {
         var len1 = res.listSelectRow.length; // số phần tử của mảng listSelectRow
         var len2 = res.listAssetId.length; //số phần tử của mảng listAssetId
-        if (res.$refs.ModalCreateAsset_ref.isActive == false) {
           switch (e.keyCode) {
             case 38:
               {
@@ -623,7 +639,6 @@ export default {
               return true;
             }
           }
-        }
       });
     },
 
@@ -657,7 +672,26 @@ export default {
       document.getElementById("ctxMenu").style.display = "none";
       })
 
-    }
+    },
+    lastPage()
+    {
+      this.paging.pageNumber = this.paging.amountPage
+      this.getAsset();
+    },
+    firstPage()
+    {
+      this.paging.pageNumber = 1
+      this.getAsset()
+    },
+    reloadPage()
+    {
+     if( parseInt(this.paging.pageNumber) <= this.paging.amountPage &&  parseInt(this.paging.pageNumber) > 0 ){
+         this.getAsset()
+      }
+      else alert("Trang không hợp lệ")
+    },
+    
+  
   },
   filters: {
     // todo định dạng kiểu tiền tệ cho nguyên giá
@@ -715,7 +749,7 @@ export default {
     padding: 8px 34px 8px 18px;
 
     &:hover {
-      background-color: #eaeaea;
+      background-color: #5973b3;
       cursor: pointer;
     }
   }
@@ -941,7 +975,7 @@ table tbody tr {
   right: 0px;
 
   animation-name: alert;
-  width: 0px;
+  width: 220px;
   animation-duration: 3s;
   white-space: nowrap;
   padding: 16px 0px;
@@ -949,10 +983,12 @@ table tbody tr {
 }
 
 @keyframes alert {
+  
   0% {
-    width: 0px;
+    width: 220px;
+    padding: 16px;
   }
-  50% {
+  50%{
     width: 220px;
     padding: 16px;
   }
@@ -1196,5 +1232,16 @@ table {
 }
 .selected-row {
   background: #d0d6e4 !important;
+}
+.p-button{
+  cursor: pointer;
+}
+.paging-toolbar .leftchild {
+    justify-content: space-between;
+    width: 355px;
+}
+.table-summary .price-number {
+    position: absolute;
+    right: 72px;
 }
 </style>

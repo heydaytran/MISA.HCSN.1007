@@ -52,6 +52,7 @@ export default {
  @import url("style/scss/input.scss");
 @import url("style/scss/table.scss");
 @import url("style/scss/modal.scss");
+@import url("style/scss/date_picker.scss");
 
 @font-face {
   font-family: GoogleSans;

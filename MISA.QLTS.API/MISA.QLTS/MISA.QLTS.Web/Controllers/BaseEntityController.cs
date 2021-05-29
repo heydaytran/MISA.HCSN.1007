@@ -38,7 +38,8 @@ namespace MISA.QLTS.Web.Controllers
             return Ok(responseResult);
         }
 
-        // POST api/<BaseController>
+        //
+        // api/<BaseController>
         [HttpPost]
         public IActionResult Post([FromBody] T entity)
         {

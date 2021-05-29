@@ -191,5 +191,7 @@ export default {
 {
   position: relative;
 }
-
+.icon-down {
+  opacity: 0.6!important;
+}
 </style>

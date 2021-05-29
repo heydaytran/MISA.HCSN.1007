@@ -16,10 +16,11 @@
 
       </div>
       <div class="sub-navbar">
-        <div class="sub-navbar-item">Ghi tăng</div>
+        <router-link class="sub-navbar-item" to="/asset/increase" tag="div"> Ghi tăng</router-link> 
         <div class="sub-navbar-item">Điều chuyển</div>
         <div class="sub-navbar-item">Tính hao mòn</div>
-        <router-link class="sub-navbar-item" to="/asset-decrease" tag="div"> Ghi giảm</router-link> 
+        <div class="sub-navbar-item">Ghi giảm</div>
+        
       </div>
     </div>
     <div id="navItem3" class="nav-item option nav-item-icon">

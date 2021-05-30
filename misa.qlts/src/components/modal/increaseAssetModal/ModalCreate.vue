@@ -26,34 +26,34 @@
             </div>
             <div class="container-box input-box">
               <div class="input-row">
-                <div class="input-field">
+                <div class="input-field asset-code">
                   <label for=""
-                    >Mã tài sản <span style="color: red">(*)</span></label
+                    >Mã chứng từ <span style="color: red">(*)</span></label
                   >
                   <input
+                  placeholder="Nhập mã chứng từ"
                     onClick="this.select();"
                     id="assetInput1"
                     type="text"
                     maxlength="20"
                     class="input-one-third"
-                    v-model="asset.assetCode"
+                    v-model="assetIncrease.exhibitCode"
                     @keyup="validateAssetCode()"
                     @blur="validateAssetCode()"
                   />
                 </div>
-                <div class="input-field">
-                    <label for=""
+                <div class="input-field date-proc">
+                  <label for=""
                     >Ngày chứng từ <span style="color: red">(*)</span></label
                   >
                   <DatePicker
                     class="input-sm"
                     input-class="datetime"
-                    placeholder="__/__/____"
-                    v-model="asset.createdDate"
+                    placeholder="dd/MM/yyyy"
+                    v-model="assetIncrease.exhibitDate"
                     type="date"
                     format="DD/MM/YYYY"
                     value-type="YYYY-MM-DD"
-                    :lang="lang"
                     :disabled-date="disabledAfterToday"
                     @input-error="showWarning('Ngày sai định dạng', true)"
                   >
@@ -67,15 +67,15 @@
                     </template>
                   </DatePicker>
                 </div>
-                 <div class="input-field">
-                     <label for=""
+                <div class="input-field date-increase">
+                  <label for=""
                     >Ngày ghi tăng <span style="color: red">(*)</span></label
                   >
                   <DatePicker
                     class="input-sm"
                     input-class="datetime"
-                    placeholder="__/__/____"
-                    v-model="asset.createdDate"
+                    placeholder="dd/MM/yyyy"
+                    v-model="assetIncrease.increaseDate"
                     type="date"
                     format="DD/MM/YYYY"
                     value-type="YYYY-MM-DD"
@@ -95,17 +95,18 @@
                 </div>
               </div>
               <div class="input-row">
-                <div class="input-field">
+                <div class="input-field field-note">
                   <label for=""
-                    >Ghi chú <span style="color: red">(*)</span></label
+                    >Ghi chú</label
                   >
                   <input
+                  placeholder="Nhập ghi chú"
                     onClick="this.select();"
                     id="assetInput1"
                     type="text"
                     maxlength="20"
                     class="input-one-third"
-                    v-model="asset.assetCode"
+                    v-model="assetIncrease.note"
                     @keyup="validateAssetCode()"
                     @blur="validateAssetCode()"
                   />
@@ -132,7 +133,43 @@
             </div>
             <div class="container-box grid-box">
               <div class="panel-header">
-                <div class="panel-fied"></div>
+                <div class="features-pane">
+                  <div class="features-pane-left">
+                    <input
+                      id="assetSearchBox"
+                      class="input-search"
+                      type="text"
+                      placeholder="Tìm kiếm. "
+                      @change="
+                        getAsset(
+                          'filter',
+                          comboxFilter.idDepartment,
+                          comboxFilter.idType
+                        )
+                      "
+                    />
+                    <div class="icon-search"></div>
+                  </div>
+
+                  <div class="features-pane-right">
+                   
+
+                    <div
+                      id="add-asset"
+                      class="btn  features-pane-item"
+                      @click="showDialogAsset()"
+                    >
+                    <div class="icon-add">
+                        <div class="icon">
+
+                        </div>
+                    </div>
+                    <div class="text-add">
+                        <div class="text">Chọn tài sản</div>
+                    </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="content-grid grid">
                 <table class="table-asset" id="tableAsset">
@@ -148,11 +185,7 @@
                   </colgroup>
                   <thead>
                     <tr>
-                      <th>
-                        <div class="checkbox-icon">
-                          <input type="checkbox" />
-                        </div>
-                      </th>
+                      
                       <th style="text-align: left">STT</th>
 
                       <th
@@ -162,7 +195,7 @@
                         class="hover-pointer"
                         style="text-align: left"
                       >
-                        SỐ CHỨNG TỪ
+                        Mã tài sản
                       </th>
                       <th
                         sortProp="code"
@@ -171,7 +204,7 @@
                         class="hover-pointer"
                         style="text-align: left"
                       >
-                        NGÀY CHỨNG TỪ
+                        Tên tài sản
                       </th>
                       <th
                         sortProp="code"
@@ -180,7 +213,7 @@
                         class="hover-pointer"
                         style="text-align: left"
                       >
-                        NGÀY GHI TĂNG
+                        Bộ phận sử dụng
                       </th>
                       <th
                         sortProp="name"
@@ -189,7 +222,7 @@
                         class="hover-pointer"
                         style="text-align: left"
                       >
-                        NỘI DUNG
+                        Ngyên giá
                       </th>
                       <th
                         sortProp="department"
@@ -198,121 +231,55 @@
                         class="hover-pointer"
                         style="text-align: left"
                       >
-                        TỔNG NGUYÊN GIÁ
+                        HM/KM lũy kế 
+                      </th>
+                      <th
+                        sortProp="department"
+                        sortOrder="asc"
+                        id="columnDepartment"
+                        class="hover-pointer"
+                        style="text-align: left"
+                      >
+                        Giá trị còn lại 
+                      </th>
+                         <th
+                        sortProp="department"
+                        sortOrder="asc"
+                        id="columnDepartment"
+                        class="hover-pointer"
+                        style="text-align: left"
+                      >
+                        
                       </th>
 
-                      <th style="text-align: left">chức năng</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    <!-- <tr
-              v-for="(asset, index) in listAsset"
-              :key="asset.assetId"
-              v-bind:class="selectedRow(asset.assetId) ? 'selected-row' : ''"
-              @click="selectRow(asset.assetId, $event)"
-              @click.right="showContexMenu(asset.assetId, $event)"
-            >
-              <td class="no-border-left">{{ index + 1 }}</td>
-              <td>{{ asset.assetCode }}</td>
-              <td>{{ asset.assetName }}</td>
-              <td>{{ asset.assetTypeName }}</td>
-              <td>{{ asset.departmentName }}</td>
-
-              <td class="no-border-right">
-                <div class="features-box">
-                  <div
-                    :id="'tableRow' + index + '_edit'"
-                    class="table-icon icon-edit-pen"
-                    @click="showDialog('update', asset.assetId)"
-                    title="Sửa"
-                  ></div>
-                  <div
-                    id="preventLeftClick"
-                    class="table-icon icon-trash-table"
-                    @click="showDeleteDialog('inRow')"
-                    title="Xóa"
-                  ></div>
-                  <div
-                    class="table-icon icon-refresh-time"
-                    title="Chức năng chưa phát triển"
-                  ></div>
-                </div>
-              </td>
-            </tr> -->
                     <tr>
-                      <td>
-                        <div class="checkbox-icon">
-                          <input type="checkbox" />
-                        </div>
-                      </td>
+                      
                       <td>hello</td>
                       <td>hello</td>
                       <td>hello</td>
                       <td>hello</td>
                       <td>hello</td>
                       <td>hello</td>
-                      <td class="no-border-right">
-                        <div class="features-box">
-                          <div
-                            :id="'tableRow' + index + '_edit'"
-                            class="table-icon icon-edit-pen"
-                            @click="showDialog('update', asset.assetId)"
-                            title="Sửa"
-                          ></div>
-                          <div
-                            id="preventLeftClick"
-                            class="table-icon icon-trash-table"
-                            @click="showDeleteDialog('inRow')"
-                            title="Xóa"
-                          ></div>
-                          <div
-                            class="table-icon icon-refresh-time"
-                            title="Chức năng chưa phát triển"
-                          ></div>
-                        </div>
-                      </td>
+                      <td>hello</td>
+                      <td><div data-v-bdaea12c="" class="btn btn-confirm-delete1">Xóa</div></td>
                     </tr>
-                    <tr>
-                      <td>
-                        <div class="checkbox-icon">
-                          <input type="checkbox" />
-                        </div>
-                      </td>
-                      <td>hello</td>
-                      <td>hello</td>
-                      <td>hello</td>
-                      <td>hello</td>
-                      <td>hello</td>
-                      <td>hello</td>
-                      <td class="no-border-right">
-                        <div class="features-box">
-                          <div
-                            :id="'tableRow' + index + '_edit'"
-                            class="table-icon icon-edit-pen"
-                            @click="showDialog('update', asset.assetId)"
-                            title="Sửa"
-                          ></div>
-                          <div
-                            id="preventLeftClick"
-                            class="table-icon icon-trash-table"
-                            @click="showDeleteDialog('inRow')"
-                            title="Xóa"
-                          ></div>
-                          <div
-                            class="table-icon icon-refresh-time"
-                            title="Chức năng chưa phát triển"
-                          ></div>
-                        </div>
-                      </td>
-                    </tr>
+                   
                   </tbody>
-                  <BaseLoading ref="BaseLoading_ref" />
+                  <!-- <BaseLoading ref="BaseLoading_ref" /> -->
 
-                  <div v-show="getEmty" class="loading-emty">
+                  <!-- <div v-show="getEmty" class="loading-emty">
                     Không có dữ liệu
-                  </div>
+                  </div> -->
                 </table>
+              </div>
+              <div class="footer-grid">
+                  <div class="footer-content">
+                      Tổng số: 0 tài sản
+                  </div>
               </div>
             </div>
 
@@ -335,6 +302,7 @@
           <div class="btn btn-save" tabindex="0" @click="save()">Lưu</div>
         </div>
       </div>
+      <AssetManagement v-if="isChoose" />
     </div>
   </div>
 </template>
@@ -344,14 +312,17 @@
 <script>
 import axios from "axios";
 
-// import 'vue2-datepicker/locale/vi';
+import 'vue2-datepicker/locale/vi';
 
-import DatePicker from 'vue2-datepicker';
-import 'vue2-datepicker/index.css';
+import DatePicker from "vue2-datepicker";
+import "vue2-datepicker/index.css";
+
+import AssetManagement from '../../dictionary/AssetManagement.vue'
 
 export default {
   components: {
     DatePicker,
+    AssetManagement
   },
   props: {
     listAssetType: Array,
@@ -363,23 +334,23 @@ export default {
     return {
       isActive: false,
       showSuccess: true,
-      asset: {
-        assetId: null,
-        assetCode: null,
-        assetName: null,
-        assetTypeId: null,
-        departmentId: null,
-        timeUse: null,
-        wearRate: null,
-        originalPrice: "",
-        wearValue: null,
-        isUsed: false,
-        departmentName: null,
-        assetTypeName: null,
-        createdBy: null,
+      isChoose:false,
+
+      assetIncrease: {
+        increaseId: null,
+        exhibitCode: null,
+        exhibitDate: null,
+        increaseDate:null,
+        note:null,
+        increaseDetail: null,
+        createdBy : null,
         modifiedBy: null,
-        createDate: "",
+        createdDate: null,
+        modifiedDate:null
       },
+
+
+
       dup: false,
       lang: {
         formatLocale: {
@@ -430,24 +401,7 @@ export default {
     };
   },
   methods: {
-    // todo reset lại các input
-    resetInput() {
-      (this.asset.assetId = null),
-        (this.asset.assetCode = null),
-        (this.asset.assetName = null),
-        (this.asset.assetTypeId = null),
-        (this.asset.departmentId = null),
-        (this.asset.timeUse = null),
-        (this.asset.wearRate = null),
-        (this.asset.originalPrice = null),
-        (this.asset.wearValue = null),
-        (this.asset.isUsed = false),
-        (this.asset.departmentName = null),
-        (this.asset.assetTypeName = null),
-        (this.asset.createdBy = null),
-        (this.asset.modifiedBy = null);
-    },
-    // todo hiện dialog
+   
     async show() {
       var res = this;
       this.isActive = true;
@@ -458,10 +412,7 @@ export default {
       warning.classList.remove("borderRed");
       warning.classList.remove("hover-validate");
 
-      var warning1 = document.getElementById("assetInput2");
-
-      warning1.classList.remove("borderRed");
-      warning1.classList.remove("hover-validate");
+      
 
       // document.getElementById("assetInput1_warning").style.display = "none"
 
@@ -514,6 +465,11 @@ export default {
       });
     },
 
+// todo hiện form chọn tài sản
+showDialogAsset()
+{
+this.isChoose = true
+},
     // todo lấy dữ liệu tên phòng ban
     getDepartmentName() {
       var res = this;
@@ -754,7 +710,6 @@ export default {
 
 
 <style lang="scss" scoped>
-
 input {
   padding: 8px 16px;
   outline: none;
@@ -968,5 +923,258 @@ input.required {
 .container-top {
   padding-bottom: 40px;
 }
+.modal-content .content .input-field input {
+  border-radius: 2px;
+}
+#assetInput1 {
+  width: 100%;
+}
+.input-row .asset-code {
+  width: 50%;
+}
+.date-proc,
+.date-increase {
+  width: 25%;
+}
+.panel-header .features-pane{
+    display: flex;
+}
+.features-pane-left{
+    position: relative;
+}
+.icon-search{
+    position:absolute;
+    left: 0;
+    top: 5;
+}
+.input-search {
+    width: 200px;
+    padding: 8px 46px 8px 38px;
+    border: 1px solid #beccc9;
+}
+.features-pane-right {
+    position: absolute;
+    right: 24px;
+}
+.features-pane-right #add-asset .icon{
+    background: red;
+}
+.features-pane-right #add-asset{
+    width: 150px;
+}
 
+table  td, th{
+white-space: nowrap;
+}
+.modal-content .header {
+    border-bottom: 1px solid #e4e4e4;
+    background: white;
+}
+.modal-content{
+
+    height: 578px;
+}
+.container-box {
+    background: white;
+    box-shadow: 0 0 7px #bbb6b6;
+    border: 1px solid #e4e4e4;
+}
+.container-below {
+    box-sizing: border-box;
+    overflow: hidden;
+}
+.modal-content .footer {
+   
+    border-top: 2px solid #eaeaea;
+}
+.container-box.grid-box {
+    height: calc(100% - 34px);
+}
+.container-box {
+    padding: 16px;
+}
+.modal-content[data-v-654548ea] {
+    top: calc((100% - 616px)/2);
+    left: calc((100% - 880px)/2);
+    height: 616px;
+}
+.modal-container {
+    width: 100%;
+    height: 45%;
+}
+.container-box {
+    height: calc(100% - 34px);
+}
+.container-top{
+    /* padding-bottom: 40px; */
+     padding-bottom: 0px; 
+}
+.modal-content .content  .field-note{
+    width: 100%;
+}
+.modal-content .content .input-field{
+    padding: 0 0px 16px 0px;
+}
+.modal-content .content {
+    padding: 16px;
+}
+.input-field.asset-code {
+    box-sizing: border-box;
+}
+.input-field.date-proc {
+    box-sizing: border-box;
+}
+.input-field.date-proc {
+    padding-left: 16px!important;
+}
+.input-field.date-increase {
+    padding-left: 16px!important;
+}
+::placeholder {
+  color: rgb(191, 194, 191);
+  font-size: 12px;
+  
+}
+.modal-container.container-below {
+    height: 55%;
+    padding-top: 30px;
+}
+input#assetSearchBox {
+    height: 34px;
+    border-radius: 2px;
+}
+.icon-search {
+    position: absolute;
+    left: 0;
+    top: 3px;
+}
+input#assetSearchBox {
+    height: 34px;
+    width: 246px;
+    border-radius: 2px;
+}
+.features-pane-right #add-asset {
+    width: 150px;
+    border: 1px solid #beccc9;
+}
+.icon-add {
+     height: 20px;
+    width: 20px;
+    background-image:  url("../../../assets/icon/add-icon.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.features-pane-right #add-asset {
+    width: 150px;
+    border: 1px solid #beccc9;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+}
+.icon-add[data-v-654548ea] {
+    height: 25px;
+    width: 25px!important;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALgSURBVEhLxVXpSypxFH1/dQWBUVaY7WRlpiCF7SX6wSjSXJKUCNQPUuHWRlbaomF753GuM+I4QTwej3e+TN3fzPnde+6511/4R/g/xB8fH3h6ekKxWMTp6SkymQzOzs5wfX2NWq2Gz89P5U09viX++voSwkKhgGg0itXVVczOzmJ6ehp2ux3r6+uIx+M4Pz+XC/h+K3TEfOnh4UEIJycn0dXVhf7+fgwPD8PlcsFsNqOvrw8GgwE2mw2Hh4eoVCo6ch0xM/B6vejp6cHY2BhCoRDK5bJyWsfNzQ22t7cxMDAglwQCATw/PyundeiIfT4fjEYj5ubmkMvlROfWbPg/40dHR7BarTCZTAiHw8ppHRrik5MTjI+Pw+l0yt/v7+8S5/Py8hIrKyu4u7trNO3t7Q2pVAozMzPSg3w+L3FCQ8ym8PZYLIaXlxclCikzmUxKJaxCvZDgGWUZGhqSpwoN8cTEhJSWzWaVSB3UnU3q7OzE8fGxZNoMZm2xWEQ+9dIGcalUkmzX1tbEt/yYpe3t7WF3dxeLi4vo6OjAxsaGNJRxykMi2m5hYQFTU1ONRjeImSVttbm5KToyy/39ffEubUebtbW1YWRkRAgYZ6aUjC5xu91S8cXFhfA1iHnIjD0eD25vb/H6+iqTRittbW1hfn4e7e3t0sCdnR2JM1O1scvLy3IhvyU0GtMRND0b1IyfNE6n0+IMukk90xAzG5r+4OBA8zE7n0gk0N3dLZI1u4KV+f1+DA4OiowqNMQ0PDVUh0P1q9ogjjSbo8Y5JMyWVTLj5ko1xARdwT1Aza6urpRoHa0TyE3ncDikEvahGTrix8dHsVRvb6+4gcPCTdcMLp1gMIjR0VFxEgejWq0qp3XoiJkVPU3duIQ4bSRguewBB4hycUlxKLgF7+/vf95uBDXk6qQDOBzUVvUun0tLS4hEImJHZtpKSnxLrILNYdk0PS9ho/ikbynPH/+C/D2A35wi2nqWTFWmAAAAAElFTkSuQmCC);
+    background-repeat: no-repeat;
+    /* background-size: contain; */
+    background-size: 20px 20px;
+    background-position: center;
+}
+.features-pane-right #add-asset[data-v-654548ea] {
+    padding: 0 10px!important;
+}
+.features-pane-right #add-asset[data-v-654548ea] {
+    width: auto;
+}
+.features-pane-right[data-v-654548ea] {
+    position: absolute;
+    right: 34px;
+}
+.modal-content {
+    top: calc((100% - 632px)/2)!important;
+    left: calc((100% - 880px)/2)!important;
+    height: 632px!important;
+}
+.panel-header {
+  padding-bottom: 20px ;
+}
+
+th {
+    background: #f5f6fa!important;
+}
+.panel-header[data-v-654548ea] {
+    /* padding-bottom: 20px; */
+    padding: 16px;
+    padding-bottom: 20px;
+}
+.container-box[data-v-654548ea] {
+    padding: 0px;
+}
+table tr td{
+  border-right:none ;
+}
+.container-box.input-box {
+    padding: 16px!important;
+}
+.panel-header {
+    /* padding-bottom: 20px; */
+    padding: 16px;
+    /* padding-bottom: 20px; */
+    padding-bottom: none;
+}
+.modal-container{
+    width: 100%;
+    height: 42%;
+}
+.modal-container.container-below{
+    height: 58%;
+    padding-top: 30px;
+}
+.footer-grid {
+    display: flex;
+    align-items: center;
+    padding-top: 11px;
+    height: auto;
+}
+.footer-content {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid;
+    width: 100%;
+}
+.modal-container.container-below{
+    height: 58%;
+    padding-top: 22px;
+}
+.footer-content {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #d6d6d6;
+    width: 100%;
+}
+.footer-content {
+    padding-left: 16px;
+}
+.btn.btn-cancel {
+    position: absolute;
+    right: 113px;
+}
+
+.btn-confirm-delete1 {
+    background-color: #ff4646;
+    color: white;
+    margin-left: 23px;
+    height: 28px;
+        box-sizing: border-box;
+    padding: 0 13px !important;
+    width: 50px;
+}
+table tr{
+  cursor: pointer;
+}
+table th{
+  cursor: default;
+}
 </style>

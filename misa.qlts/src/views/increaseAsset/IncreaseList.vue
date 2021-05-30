@@ -18,17 +18,17 @@
             >
               Thêm
             </div>
-            <div class="hover-pointer button-option-view" >
-              <div class="hover-pointer icon-view"  v-bind:class="{ 'icon-view-all' : viewAll, 'icon-view-detail': !viewAll }"></div>
-              <div class="hover-pointer icon-arrow"></div>
+            <div class="hover-pointer button-option-view"  >
+              <div title="Chế độ xem" class="hover-pointer icon-view"  v-bind:class="{ 'icon-view-all' : viewAll, 'icon-view-detail': !viewAll }"></div>
+              <div title="Chế độ xem" class="hover-pointer icon-arrow"></div>
               <div class="menu-option-view">
-                <div class="item-option option-full"  @click="changeVisual('all')">
+                <div  title="Mặc định" class="item-option option-full"  @click="changeVisual('all')">
                   <div v-if="viewAll" class="hover-pointer icon-chosen"></div>
                   <div class="hover-pointer icon-view-all"></div>
                 </div>
-                <div class="item-option option-detail" @click="changeVisual('detail')">
+                <div title="Xem chi tiết" class="item-option option-detail" @click="changeVisual('detail')">
                   <div v-if="!viewAll"  class="hover-pointer icon-chosen"></div>
-                  <div class="hover-pointer icon-view-detail"></div>
+                  <div  class="hover-pointer icon-view-detail"></div>
                 </div>
               </div>
             </div>
@@ -253,7 +253,6 @@
               <td class="no-border-right">
                 <div class="features-box">
                   <div
-                    :id="'tableRow' + index + '_edit'"
                     class="table-icon icon-edit-pen"
                     @click="showDialog('update', asset.assetId)"
                     title="Sửa"
@@ -286,7 +285,6 @@
               <td class="no-border-right">
                 <div class="features-box">
                   <div
-                    :id="'tableRow' + index + '_edit'"
                     class="table-icon icon-edit-pen"
                     @click="showDialog('update', asset.assetId)"
                     title="Sửa"
@@ -550,9 +548,9 @@ export default {
     //     });
     // },
 
-    async getAsset() {
-      await axios.get("http://localhost:56697/api/v1/");
-    },
+    // async getAsset() {
+    //   await axios.get("http://localhost:56697/api/v1/");
+    // },
 
     /// todo hiển thị dialog thêm
     showDialog(text, Id) {
@@ -793,7 +791,7 @@ export default {
   mounted() {
     this.getDepartment();
     this.getAssetType();
-    this.getAsset();
+    // this.getAsset();
   },
 };
 </script>
@@ -1213,6 +1211,9 @@ table tbody tr td {
   border-radius: 3px;
   text-align: center;
 }
+.table-icon.icon-refresh-time {
+    background-size: 20px!important;
+}
 
 .select-quantitypage {
   appearance: none;
@@ -1552,6 +1553,10 @@ background-repeat: no-repeat;
 }
 table tbody tr td{
   border-right: none;
+}
+
+.feature-right .button-option-view .menu-option-view {
+    top: 33px;
 }
 
 </style>

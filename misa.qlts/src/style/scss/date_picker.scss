@@ -1,4 +1,4 @@
-@import '~vue2-datepicker/scss/index.scss';
+@import '~vue2-datepicker/index.css';
 
 .mx-icon-calendar, .mx-icon-clear {
     display: none !important;
@@ -12,12 +12,22 @@
     font-family: "GoogleSans-Regular";
     font-size: 13px;
     width: 100%;
-    background-position: 170px center;
+    background-position: 160px center;
     cursor: pointer;
     outline: none;
     position: relative;
     padding-left: 10px;
     padding-right: 29px;
-    text-align: center;
+    border:#e4e4e4 1px solid;
+    height: 34px;
+    border-radius: 2px;
+    text-align: left;
 }
-
+.mx-datepicker {
+    position: relative;
+    display: inline-block;
+    width: 100%!important;
+}
+input.datetime {
+    text-align: left;
+}

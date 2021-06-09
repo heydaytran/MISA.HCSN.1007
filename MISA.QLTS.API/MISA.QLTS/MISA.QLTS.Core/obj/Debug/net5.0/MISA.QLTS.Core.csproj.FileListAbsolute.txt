@@ -82,3 +82,17 @@ C:\Users\tvthinh\Desktop\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\o
 C:\Users\tvthinh\Desktop\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\MISA.QLTS.Core.dll
 C:\Users\tvthinh\Desktop\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\ref\MISA.QLTS.Core.dll
 C:\Users\tvthinh\Desktop\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\MISA.QLTS.Core.pdb
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\bin\Debug\net5.0\MISA.QLTS.Core.deps.json
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\bin\Debug\net5.0\MISA.QLTS.Core.dll
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\bin\Debug\net5.0\ref\MISA.QLTS.Core.dll
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\bin\Debug\net5.0\MISA.QLTS.Core.pdb
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\MISA.QLTS.Core.csprojAssemblyReference.cache
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\MISA.QLTS.Core.Resource.ResourceMessage.resources
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\MISA.QLTS.Core.csproj.GenerateResource.cache
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\MISA.QLTS.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\MISA.QLTS.Core.AssemblyInfoInputs.cache
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\MISA.QLTS.Core.AssemblyInfo.cs
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\MISA.QLTS.Core.csproj.CoreCompileInputs.cache
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\MISA.QLTS.Core.dll
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\ref\MISA.QLTS.Core.dll
+C:\Users\tvthinh\Desktop\ThinhProject\MISA.HCSN.1007\MISA.QLTS.API\MISA.QLTS\MISA.QLTS.Core\obj\Debug\net5.0\MISA.QLTS.Core.pdb

@@ -152,11 +152,11 @@
                   </div>
 
                   <div class="features-pane-right">
-                    <div id="add-asset" class="btn features-pane-item">
+                    <div @click="chooseAsset()" id="add-asset" class="btn features-pane-item">
                       <div class="icon-add">
                         <div class="icon"></div>
                       </div>
-                      <div @click="chooseAsset()" class="text-add">
+                      <div  class="text-add">
                         <div class="text">Chọn tài sản</div>
                       </div>
                     </div>
@@ -166,15 +166,14 @@
               <div class="content-grid grid">
                 <table class="table-asset" id="tableAsset">
                   <colgroup>
-                    <col width="50" />
-                    <!-- <col width="120" /> -->
-                    <col width="120" />
-                    <col min-width="650" />
-                    <col min-width="200" />
-                    <col min-width="650" />
-                    <col width="50" />
-                    <col width="100" />
-                    <col width="50" />
+                    <col width="0px" />
+                    <col width="0px" />
+                    <col min-width="0px" />
+                    <col min-width="0px" />
+                    <col min-width="0px" />
+                    <col width="0px" />
+                    <col width="0px" />
+                    <col width="0" />
                   </colgroup>
                   <thead>
                     <tr>
@@ -221,7 +220,7 @@
                       <th class="hover-pointer" style="text-align: right">
                         Giá trị còn lại
                       </th>
-                      <th>Chức năng</th>
+                      <th>   </th>
                     </tr>
                   </thead>
 
@@ -238,23 +237,30 @@
                           .indexOf(inputSearch.toLocaleLowerCase()) !== -1
                       "
                     >
-                      <td class="no-border-left">{{ index + 1 }}</td>
-                      <td :title="item.assetCode">{{ item.assetCode }}</td>
-                      <td :title="item.assetName">{{ item.assetName }}</td>
-                      <td :title="item.departmentName">{{ item.departmentName }}</td>
-                      <td style="text-align: right; text-overflow: unset;">
-                        <input style="width:89px ;text-align: right; text-overflow: ellipsis;" 
+                      <td class="no-border-left" >{{ index + 1 }}</td>
+                      <td :title="item.assetCode" style="text-overflow: ellipsis;">{{ item.assetCode }}</td>
+                      <td :title="item.assetName" style="text-overflow: ellipsis;">{{ item.assetName }}</td>
+                      <td :title="item.departmentName" style="text-overflow: ellipsis;">{{ item.departmentName }}</td>
+                      <td style="text-align: right; text-overflow: unset;" >
+                        <input class="inputMoney" style="width:114px ;text-align: right; text-overflow: ellipsis;" 
                           type="text"
+                          @click="addBorder($event)"
+                          @blur="removeBorder($event)"
                           v-model="item.originalPrice"
                           :title="item.originalPrice"
                           v-money="money"
                           maxlength="20"
                           @keyup="updateResidual(item, index)"
+                          onClick="this.select();"
                         />
                       </td>
                       <td style="text-align: right; text-overflow: unset;">
-                         <input style="width:74px ;text-align: right; text-overflow: ellipsis;"
+                         <input style="width:103px ;text-align: right; text-overflow: ellipsis;"
                           type="text"
+                          onClick="this.select();"
+                          class="inputMoney"
+                          @click="addBorder($event)"
+                          @blur="removeBorder($event)"
                           v-model="item.wearValue"
                           :title="item.wearValue"
                           v-money="money"
@@ -263,7 +269,7 @@
                         />
                       </td>
 
-                      <td class="no-border-right" style="text-align: right; "
+                      <td class="no-border-right" style="text-align: right; text-overflow:ellipsis; "
                       :title="item.resValue | formatMoney(item.resValue)">
                        {{ item.resValue | formatMoney(item.resValue) }}
                       </td>
@@ -272,6 +278,7 @@
                           @click="deleteItem(item.assetId)"
                           data-v-bdaea12c=""
                           class="icon-refresh-time1 btn btn-confirm-delete1"
+                          title="Xóa"
                         >
                           
                         </div>
@@ -302,7 +309,7 @@
                 </div>
               </div>
               <div class="sumary">
-                <div class="sumary-text">Tổng số: 0 tài sản</div>
+                <div class="sumary-text">Tổng số: {{listAssetView.length}} tài sản</div>
               </div>
             </div>
 
@@ -430,7 +437,8 @@ export default {
         monthFormat: "TMM",
       },
       indexUpdateAsset: null, // lưu lại vị trí tài sản đang sửa
-      listResPrice:[]
+      listResPrice:[],
+      assetIncreaseCompare:''
     };
   },
 
@@ -442,6 +450,16 @@ export default {
 
             item.resValue = item.originalPrice - item.wearValue
 
+    },
+    //todo thêm border khi click vào input money
+    addBorder(e){
+        e.target.style.border = '1px solid black'
+      
+    },
+    //todo xóa border khi blur khỏi input money
+    removeBorder(e)
+    {
+      e.target.style.border = '1px solid white'
     },
     // todo hiển thị dialog chọn tài sản
     chooseAsset() {
@@ -469,6 +487,7 @@ export default {
     },
     // todo hiển thị dialog thêm chứng từ ghi tăng
     async show() {
+      
       this.turnOffValidate();
 
       var res = this;
@@ -498,6 +517,8 @@ export default {
           .then((Response) => {
             res.assetIncrease = Response.data.data;
             res.listAssetView = JSON.parse(res.assetIncrease.increaseDetail);
+            res.assetIncreaseCompare = JSON.stringify(res.assetIncrease) 
+
 
             // debugger; // eslint-disable-line no-debugger
           })
@@ -521,10 +542,18 @@ export default {
 
     // todo ẩn dialog
     hide() {
+      if(this.formMode == 'update')
+      {
+        if(this.assetIncreaseCompare != JSON.stringify(this.assetIncrease))
+        {
+          alert('dữ liệu thay đổi, bạn có muốn lưu không')
+        }
+      }
       this.isActive = false;
       document.getElementsByClassName("body-right")[0].style.zIndex = "0";
       this.assetIncrease.increaseDate = null;
       this.assetIncrease.exhibitDate = null;
+       this.$emit("statusForm", '');
     },
 
     // todo select tất cả nội dung ô input khi click
@@ -2117,7 +2146,7 @@ th, td {
 .icon-refresh-time1{
     height: 26px !important;
     width: 34px !important;
-    background: url(/img/qlts-icon.d656886f.svg) no-repeat -396px -123px;
+    background: url(/img/qlts-icon.d656886f.svg) no-repeat -396px -120px;
     background-repeat: no-repeat;
     border-radius: 4px;
     background-size: 440px 1207px;
@@ -2128,4 +2157,38 @@ th, td {
 .btn.btn-confirm-delete1{
   border: none;
 }
+.btn:hover {
+    cursor: pointer;
+    background-color: rgba(214, 214, 214, 0.829);
+}
+.btn-save:hover{
+  background-color: #29b8ff!important;
+}
+.inputMoney{
+  border: 1px solid #ffffff;
+   background-clip: padding-box; 
+}
+
+table tbody tr td {
+    max-width: 123px;
+}
+table tbody tr td:nth-child(7) {
+    max-width: 130px;
+}
+table tbody tr td:nth-child(5) {
+  padding: 0;
+    width: 130px;
+}
+.btn{
+  height: 34px!important;
+}
+
+.below-label, .top-label {
+  font-size: 16px;
+}
+
+.container-box{
+     box-shadow:none; 
+}
+
 </style>

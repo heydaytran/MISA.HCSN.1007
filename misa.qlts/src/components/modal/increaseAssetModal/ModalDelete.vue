@@ -43,6 +43,7 @@ export default {
 
     hide() {
       this.isActive = false;
+       this.$emit("statusForm", '');
     },
 
 

@@ -7,7 +7,11 @@
             <div class="text-title">
               <div class="text">Ghi tăng tài sản</div>
             </div>
-            <div title="Tải lại trang" class="button-refresh" @click="getAssetIncrease()">
+            <div
+              title="Tải lại trang"
+              class="button-refresh"
+              @click="getAssetIncrease()"
+            >
               <div class="hover-pointer icon"></div>
             </div>
           </div>
@@ -92,8 +96,14 @@
               class="btn icon-trash features-pane-item"
               @click="showDeleteDialog()"
             ></div>
-            <div class="btn icon-print features-pane-item" title="In chứng từ"></div>
-            <div class="btn icon-more features-pane-item" title="Tùy chọn"></div>
+            <div
+              class="btn icon-print features-pane-item"
+              title="In chứng từ"
+            ></div>
+            <div
+              class="btn icon-more features-pane-item"
+              title="Tùy chọn"
+            ></div>
           </div>
         </div>
 
@@ -167,7 +177,7 @@
                 sortOrder="asc"
                 id="columnDepartment"
                 class="hover-pointer"
-                style="text-align: left"
+                style="text-align: right"
               >
                 TỔNG NGUYÊN GIÁ
               </th>
@@ -242,10 +252,7 @@
               </td>
               <td class="no-border-right">
                 <div class="features-box">
-                  <div
-                    class="table-icon icon-edit-pen1"
-                    title="In "
-                  ></div>
+                  <div class="table-icon icon-edit-pen1" title="In "></div>
                   <div
                     class="table-icon icon-trash-table1"
                     @click.stop="showDialog('update', item.assetIncreaseId)"
@@ -268,7 +275,7 @@
         </table>
       </div>
 
-     <div class="grid-detail-container">
+      <div class="grid-detail-container">
         <div class="header-table-detail text-title">
           <div @mousedown="resizeDetail($event)" class="resize-icon">
             <div class="icon-top"></div>
@@ -276,106 +283,107 @@
             <div class="icon-bottom"></div>
           </div>
         </div>
-        <div class="title">
-          Thông tin chi tiết
+        <div class="title">Thông tin chi tiết</div>
+        <div class="content-grid-detail content-grid grid">
+          <table class="table-detail table-asset" id="tableAsset">
+            <colgroup>
+              <col width="20px" />
+              <col width="200px" />
+              <col min-width="200px" />
+              <col min-width="300px" />
+              <col min-width="300px" />
+              <col min-width="300px" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th style="text-align: left">STT</th>
+
+                <th
+                  sortProp="code"
+                  sortOrder="asc"
+                  id="columnAssetCode"
+                  class="hover-pointer"
+                  style="text-align: left"
+                >
+                  Mã tài sản
+                </th>
+                <th
+                  sortProp="code"
+                  sortOrder="asc"
+                  id="columnAssetCode"
+                  class="hover-pointer"
+                  style="text-align: left"
+                >
+                  Bộ phận sử dụng
+                </th>
+                <th
+                  sortProp="code"
+                  sortOrder="asc"
+                  id="columnAssetCode"
+                  class="hover-pointer"
+                  style="text-align: right"
+                >
+                  Nguyên giá
+                </th>
+                <th
+                  sortProp="name"
+                  sortOrder="asc"
+                  id="columnAssetName"
+                  class="hover-pointer"
+                  style="text-align: right"
+                >
+                  HM/KH lũy kế
+                </th>
+                <th
+                  sortProp="department"
+                  sortOrder="asc"
+                  id="columnDepartment"
+                  class="hover-pointer"
+                  style="text-align: right"
+                >
+                  Giá trị còn lại
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr
+                v-for="(item, index) in increaseDetails"
+                v-show="listAssetIncrease[indexDetail] !== undefined"
+                v-bind:class="
+                  selectedRow(item.assetIncreaseId) ? 'selected-row' : ''
+                "
+                :key="item.assetIncreasesId"
+              >
+                <td>{{ index + 1 }}</td>
+                <td :title="item.assetCode">{{ item.assetCode }}</td>
+                <td :title="item.departmentName">{{ item.departmentName }}</td>
+                <td
+                  :title="item.originalPrice | formatMoney(item.originalPrice)"
+                  style="text-align: right"
+                >
+                  {{ item.originalPrice | formatMoney(item.originalPrice) }}
+                </td>
+                <td
+                  style="text-align: right"
+                  :title="item.wearValue | formatMoney(item.wearValue)"
+                >
+                  {{ item.wearValue | formatMoney(item.wearValue) }}
+                </td>
+                <td
+                  style="text-align: right"
+                  :title="item.resValue | formatMoney(item.resValue)"
+                >
+                  {{ item.resValue | formatMoney(item.resValue) }}
+                </td>
+              </tr>
+            </tbody>
+            <BaseLoading ref="BaseLoading_ref" />
+
+            <div v-show="getEmty" class="loading-emty">Không có dữ liệu</div>
+          </table>
         </div>
-      <div class="content-grid-detail content-grid grid">
-        <table class="table-detail table-asset" id="tableAsset">
-          <colgroup>
-            <col width="50" />
-            <!-- <col width="120" /> -->
-            <col width="120" />
-            <col min-width="500" />
-            <col min-width="500" />
-            <col min-width="500" />
-          </colgroup>
-          <thead>
-            <tr>
-              <th style="text-align: left">STT</th>
-
-              <th
-                sortProp="code"
-                sortOrder="asc"
-                id="columnAssetCode"
-                class="hover-pointer"
-                style="text-align: left"
-              >
-                Mã tài sản
-              </th>
-              <th
-                sortProp="code"
-                sortOrder="asc"
-                id="columnAssetCode"
-                class="hover-pointer"
-                style="text-align: left"
-              >
-                Bộ phận sử dụng
-              </th>
-              <th
-                sortProp="code"
-                sortOrder="asc"
-                id="columnAssetCode"
-                class="hover-pointer"
-                style="text-align: right"
-              >
-                Nguyên giá
-              </th>
-              <th
-                sortProp="name"
-                sortOrder="asc"
-                id="columnAssetName"
-                class="hover-pointer"
-                style="text-align: right"
-              >
-                HM/KH lũy kế
-              </th>
-              <th
-                sortProp="department"
-                sortOrder="asc"
-                id="columnDepartment"
-                class="hover-pointer"
-                style="text-align: right"
-              >
-                Giá trị còn lại
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-           
-            <tr
-              v-for="(item, index) in increaseDetails"
-              v-show="listAssetIncrease[indexDetail] !== undefined"
-              v-bind:class="
-                selectedRow(item.assetIncreaseId) ? 'selected-row' : ''
-              "
-              :key="item.assetIncreasesId"
-            >
-              <td>{{ index + 1 }}</td>
-              <td :title="item.assetCode">{{ item.assetCode }}</td>
-              <td :title="item.departmentName">{{ item.departmentName }}</td>
-              <td :title="item.originalPrice | formatMoney(item.originalPrice)" style="text-align: right">
-                {{ item.originalPrice | formatMoney(item.originalPrice) }}
-              </td>
-              <td style="text-align: right" :title="item.wearValue | formatMoney(item.wearValue)">
-                {{ item.wearValue | formatMoney(item.wearValue) }}
-              </td>
-              <td style="text-align: right" :title="item.resValue
-                    | formatMoney(item.resValue)">
-                {{
-                  item.resValue
-                    | formatMoney(item.resValue)
-                }}
-              </td>
-            </tr>
-          </tbody>
-          <BaseLoading ref="BaseLoading_ref" />
-
-          <div v-show="getEmty" class="loading-emty">Không có dữ liệu</div>
-        </table>
       </div>
-     </div>
-    
 
       <div id="assetPopup"></div>
     </div>
@@ -386,9 +394,11 @@
       :assetIdUpdate="assetIdUpdate"
       @reload="reload"
       @msgAlert="msgAlert"
+      @statusForm="statusForm"
     />
     <ModaDelete
       @reload="reload"
+      @statusForm="statusForm"
       :listSelectRow="listSelectRow"
       ref="ModalDeleteAsset_ref"
       :formMode="formMode"
@@ -444,6 +454,10 @@ export default {
     };
   },
   methods: {
+    //todo nhận trạng thái tắt form
+    statusForm(value) {
+      this.formMode = value;
+    },
     // todo nhận các câu thông báo cho modal thông báo
     msgAlert(text, value) {
       this.showWarning = value;
@@ -462,7 +476,7 @@ export default {
       });
     },
     // todo đổi tiền tệ kiểu string về số
-     fomatMoneyToNumber(value) {
+    fomatMoneyToNumber(value) {
       if (value != "") {
         return parseFloat(value.split(".").join(""));
       }
@@ -514,12 +528,16 @@ export default {
           res.listAssetIncrease.forEach((element, index) => {
             res.totalPriceEach[index] = 0;
             // duyệt qua tất cả các bản ghi
-            
+
             res.listAssetIncrease[index].increaseDetail = JSON.parse(
               element.increaseDetail
             );
             res.listAssetIncrease[index].increaseDetail.forEach((item) => {
-               typeof item.originalPrice === "string" ? item.originalPrice = this.fomatMoneyToNumber(item.originalPrice) : item.originalPrice;
+              typeof item.originalPrice === "string"
+                ? (item.originalPrice = this.fomatMoneyToNumber(
+                    item.originalPrice
+                  ))
+                : item.originalPrice;
               res.totalPriceEach[index] += item.originalPrice;
             });
             res.listAssetIncreaseId.push(element.assetIncreaseId); // push tất cả id tài sản vào mảng
@@ -570,14 +588,18 @@ export default {
     //todo hiển thị form xác nhận xóa
     showDeleteDialog(text, id, e) {
       // var res = this
+
       this.alerMsg = "Xóa thành công!";
       if (text != "inRow" && this.listSelectRow.length == 0) {
         this.showWarning = true;
         this.alerMsg = "Vui lòng chọn bản ghi";
       } else if (text == "inRow") {
+        this.formMode = "delete";
+
         this.indexDetail = this.listAssetIncreaseId.indexOf(id);
-        this.increaseDetails =
-          this.listAssetIncrease[this.indexDetail].increaseDetail;
+        this.increaseDetails = this.listAssetIncrease[
+          this.indexDetail
+        ].increaseDetail;
 
         document.getElementsByClassName("checkbox1").forEach((i) => {
           i.checked = false;
@@ -588,6 +610,8 @@ export default {
         this.listSelectRow.push(id);
         this.$refs.ModalDeleteAsset_ref.show();
       } else {
+        this.formMode = "delete";
+
         this.$refs.ModalDeleteAsset_ref.show();
         this.showWarning = false;
       }
@@ -598,31 +622,122 @@ export default {
 
     //  select hàng, nếu hàng đã được select thì xóa khỏi mẩng listSelectRow, và ngược lại
     selectRow(ind, e, id, text) {
-      if (text != "rowClick") {
+      if (e.shiftKey) {
+        var idFirst = this.listSelectRow[0];
+        this.listSelectRow = [];
+        this.listSelectRow.push(idFirst);
+
+        // vị trí đầu tiên trong mảng listSelectRow
+        var idStart = this.listSelectRow[0];
+        var indexStart = this.listAssetIncreaseId.indexOf(idStart);
+
+        var indexEnd = this.listAssetIncreaseId.indexOf(id);
+        if (indexStart > indexEnd) {
+          indexStart--;
+          var tem = indexStart;
+          indexStart = indexEnd;
+          indexEnd = tem;
+        } else {
+          indexStart++;
+        }
+        for (var i = indexStart; i <= indexEnd; i++) {
+          this.listSelectRow.push(this.listAssetIncreaseId[i]);
+        }
+      } else if (e.ctrlKey) {
         var index = this.listSelectRow.indexOf(id);
         if (index > -1) {
           this.listSelectRow.splice(index, 1);
         } else {
           this.listSelectRow.push(id);
-          this.indexDetail = this.listAssetIncreaseId.indexOf(
-            this.listSelectRow[0]
-          );
-          this.increaseDetails =
-            this.listAssetIncrease[this.indexDetail].increaseDetail;
         }
-      } else {
-        document.getElementsByClassName("checkbox1").forEach((el) => {
-          el.checked = false;
-        });
-        e.target.parentElement.firstElementChild.firstElementChild.checked = true;
-        this.indexDetail = ind;
-        this.increaseDetails =
-          this.listAssetIncrease[this.indexDetail].increaseDetail;
-        this.listSelectRow = [];
-        this.listSelectRow.push(id);
+      } else if (e.ctrlKey == false && e.shiftKey == false) {
+        if (text != "rowClick") {
+          var index1 = this.listSelectRow.indexOf(id);
+          if (index1 > -1) {
+            this.listSelectRow.splice(index, 1);
+          } else {
+            this.listSelectRow.push(id);
+            this.indexDetail = this.listAssetIncreaseId.indexOf(
+              this.listSelectRow[0]
+            );
+            this.increaseDetails = this.listAssetIncrease[
+              this.indexDetail
+            ].increaseDetail;
+          }
+        } else {
+          document.getElementsByClassName("checkbox1").forEach((el) => {
+            el.checked = false;
+          });
+
+          this.indexDetail = ind;
+          this.increaseDetails = this.listAssetIncrease[
+            this.indexDetail
+          ].increaseDetail;
+          this.listSelectRow = [];
+          this.listSelectRow.push(id);
+        }
       }
     },
-
+    // todo xử lý sự kiện mũi tên lên xuống để select row
+    processkey() {
+      var res = this;
+      document.addEventListener("keydown", function (e) {
+        if (res.formMode == "") {
+          var len1 = res.listSelectRow.length; // số phần tử của mảng listSelectRow
+          var len2 = res.listAssetIncreaseId.length; //số phần tử của mảng listAssetId
+          switch (e.keyCode) {
+            case 38:
+              {
+                //up arrow
+                if (
+                  len1 == 0 ||
+                  res.listAssetIncreaseId.indexOf(res.listSelectRow[0]) == 0
+                ) {
+                  res.listSelectRow = [];
+                  res.listSelectRow.push(res.listAssetIncreaseId[len2 - 1]);
+                } else if (len1 > 0) {
+                  //res.listSelectRow = [];
+                  var indexIdFirst = res.listAssetIncreaseId.indexOf(
+                    res.listSelectRow[0]
+                  );
+                  res.listSelectRow = [];
+                  res.listSelectRow.push(
+                    res.listAssetIncreaseId[indexIdFirst - 1]
+                  );
+                }
+              }
+              break;
+            case 40:
+              {
+                // //down arrow
+                if (
+                  len1 == 0 ||
+                  res.listAssetIncreaseId.indexOf(
+                    res.listSelectRow[len1 - 1]
+                  ) ==
+                    len2 - 1
+                ) {
+                  res.listSelectRow = [];
+                  res.listSelectRow.push(res.listAssetIncreaseId[0]);
+                } else if (len1 > 0) {
+                  //res.listSelectRow = [];
+                  var indexIdLast = res.listAssetIncreaseId.indexOf(
+                    res.listSelectRow[len1 - 1]
+                  );
+                  res.listSelectRow = [];
+                  res.listSelectRow.push(
+                    res.listAssetIncreaseId[indexIdLast + 1]
+                  );
+                }
+              }
+              break;
+            default: {
+              return true;
+            }
+          }
+        }
+      });
+    },
     // kiểm tra hàng đã được select hay chưa
     selectedRow(id) {
       if (this.listSelectRow.indexOf(id) > -1) return true;
@@ -658,7 +773,7 @@ export default {
     changeVisual(text) {
       if (text == "all") {
         document.getElementsByClassName("content-grid-all")[0].style.height =
-          "calc(100% - 140px)";
+          "calc(100% - 109px)";
 
         document.getElementsByClassName(
           "content-grid-detail"
@@ -670,8 +785,10 @@ export default {
           "white";
       } else {
         this.viewAll = false;
+        document.getElementsByClassName("content-grid-detail")[0].style.height =
+          "175px";
         document.getElementsByClassName("content-grid-all")[0].style.height =
-          "calc(100% - 315px)";
+          "calc(100% - 344px)";
 
         document.getElementsByClassName(
           "content-grid-detail"
@@ -708,8 +825,9 @@ export default {
       var tableDetail = document.getElementsByClassName(
         "content-grid-detail"
       )[0];
-      var tableAssetIncrease =
-        document.getElementsByClassName("content-grid-all")[0];
+      var tableAssetIncrease = document.getElementsByClassName(
+        "content-grid-all"
+      )[0];
 
       window.addEventListener("mousemove", mousemove);
       window.addEventListener("mouseup", mouseup);
@@ -741,7 +859,6 @@ export default {
     // todo định dạng kiểu tiền tệ cho nguyxên giá
     formatMoney: function (money) {
       if (money != null) {
-        
         var num = money.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
       } else return "0";
       return num;
@@ -758,7 +875,14 @@ export default {
       return date;
     },
   },
-  watch: {},
+  updated() {
+    document
+      .getElementsByClassName("checkbox1")
+      .forEach((ele) => (ele.checked = false));
+    document.getElementsByClassName("selected-row").forEach((ele) => {
+      ele.firstElementChild.firstElementChild.checked = true;
+    });
+  },
   beforeCreate() {
     this.indexDetail = 0;
   },
@@ -767,6 +891,7 @@ export default {
   },
   mounted() {
     this.getAssetIncrease();
+    this.processkey();
   },
 };
 </script>
@@ -1023,7 +1148,7 @@ table tbody tr {
 }
 
 .selected-row {
-  background: #8dd2f369 !important
+  background: #8dd2f369 !important;
 }
 
 .v-sheet.v-alert {
@@ -1198,7 +1323,6 @@ table tbody tr td {
   padding-left: 4px;
 }
 
-
 .filter-menu {
   height: 80px;
   width: 102px;
@@ -1334,7 +1458,7 @@ table {
   height: 34px;
   width: 34px;
   background: url(../../assets/icon/qlts-icon.svg) no-repeat -103px -61px;
- 
+
   background-repeat: no-repeat;
   border-radius: 4px;
 }
@@ -1690,114 +1814,142 @@ table tbody tr td {
 }
 
 .table-summary {
-    height: 55px;
-    /* margin-top: 6px; */
-    margin-left: 0;
-    padding-top: 8px;
-    background: #f5f6fa;
-    padding-left: 36px;
-    /* border-top: 1px solid #e5e5e5; */
-    /* margin-top: -9px; */
+  height: 55px;
+  /* margin-top: 6px; */
+  margin-left: 0;
+  padding-top: 8px;
+  background: #f5f6fa;
+  padding-left: 36px;
+  /* border-top: 1px solid #e5e5e5; */
+  /* margin-top: -9px; */
 }
 .button-refresh[data-v-5ecf59db] {
-    padding-left: 4px;
+  padding-left: 4px;
 }
 .paging-toolbar .leftchild {
-    height: 100%;
-    min-width: 330px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 355px;
+  height: 100%;
+  min-width: 330px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 355px;
 }
-input.checkbox1.checkboxAll1{
+input.checkbox1.checkboxAll1 {
   position: absolute;
-    left: 16px;
-    top: 10px;
+  left: 16px;
+  top: 10px;
 }
 .content {
-    height: calc(100%);
+  height: calc(100%);
 }
 .table-detail thead tr th[data-v-5ecf59db] {
-    text-transform: uppercase;
-    font-size: 11px;
-    color: #1d3464;
-    position: sticky;
-    top: 0;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: #1d3464;
+  position: sticky;
+  top: 0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .title {
-    padding: 12px;
-    margin: 0 16px;
-    width: calc(100% - 32px);
-    border-top: none;
-    box-sizing: border-box;
-    background: white;
-        border-left: 1px solid #d0cece;
-        border-right: 1px solid #d0cece;
-
+  padding: 12px;
+  margin: 0 16px;
+  width: calc(100% - 32px);
+  border-top: none;
+  box-sizing: border-box;
+  background: white;
+  border-left: 1px solid #d0cece;
+  border-right: 1px solid #d0cece;
 }
-.content-nav{
-    box-shadow: none;
+.content-nav {
+  box-shadow: none;
 }
 
-.header-table-detail.text-title{
-    border-top: 4px solid #d0cece;
-    margin-left: 16px;
+.header-table-detail.text-title {
+  border-top: 4px solid #d0cece;
+  margin-left: 16px;
 }
 .content-grid {
-    overflow-x: hidden;
+  overflow-x: hidden;
 }
 .content-grid-all {
-    height: calc(100% - 344px);
+  height: calc(100% - 344px);
 }
 .title {
- 
-    border-top: 4px solid #e5e5e5;
+  border-top: 4px solid #e5e5e5;
 }
-.header-table-detail.text-title{
-    border-top: none;
+.header-table-detail.text-title {
+  border-top: none;
 }
 .icon-trash-table1[data-v-5ecf59db] {
-    height: 26px !important;
-    width: 34px !important;
-    background: url(/img/qlts-icon.d656886f.svg) no-repeat -121px -102px;
-    background-repeat: no-repeat;
-    border-radius: 3px;
-    background-size: 428px 1217px;
+  height: 26px !important;
+  width: 34px !important;
+  background: url(/img/qlts-icon.d656886f.svg) no-repeat -121px -102px;
+  background-repeat: no-repeat;
+  border-radius: 3px;
+  background-size: 428px 1217px;
 }
 .icon-edit-pen1[data-v-5ecf59db] {
-    height: 26px !important;
-    width: 34px !important;
-    background: url(/img/qlts-icon.d656886f.svg) no-repeat -306px -99px;
-    background-repeat: no-repeat;
-    border-radius: 4px;
-    background-size: 480px 1332px;
+  height: 26px !important;
+  width: 34px !important;
+  background: url(/img/qlts-icon.d656886f.svg) no-repeat -306px -99px;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  background-size: 480px 1332px;
 }
 .icon-refresh-time1[data-v-5ecf59db] {
-    height: 26px !important;
-    width: 34px !important;
-    background: url(/img/qlts-icon.d656886f.svg) no-repeat -396px -121px;
-    background-repeat: no-repeat;
-    border-radius: 4px;
-    background-size: 440px 1207px;
+  height: 26px !important;
+  width: 34px !important;
+  background: url(/img/qlts-icon.d656886f.svg) no-repeat -396px -121px;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  background-size: 440px 1207px;
 }
 .button-refresh .icon[data-v-5ecf59db] {
-    height: 34px;
-    width: 34px;
-    background: url(/img/qlts-icon.d656886f.svg) no-repeat -109px -49px;
-    background-repeat: no-repeat;
-    border-radius: 4px;
-    background: -s;
-    background-size: 473px 1110px;
+  height: 34px;
+  width: 34px;
+  background: url(/img/qlts-icon.d656886f.svg) no-repeat -109px -49px;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  background: -s;
+  background-size: 473px 1110px;
 }
-.header-right-item{
+.header-right-item {
   display: none;
 }
 .icon-trash {
-    background: url(/img/qlts-icon.d656886f.svg) no-repeat -453px -105px;
+  background: url(/img/qlts-icon.d656886f.svg) no-repeat -453px -105px;
 }
+.v-sheet.v-alert {
+  bottom: 35px;
+}
+.table-detail th#columnDepartment {
+  width: 300px;
+  max-width: 300px;
+}
+.content-grid-detail.content-grid.grid {
+  border-top: none;
+}
+.table-detail thead tr th {
+  border-top: 1px solid #d6d6d6;
+  background-color: #f5f6fa;
+}
+
+
+
+.content-grid-detail{
+    height: 175px;
+    min-height: 175px;
+}
+
+.content {
+    height: calc(100% - 40px);
+}
+.grid-detail-container {
+    height: 25.3%;
+}
+
+
 </style>

@@ -54,21 +54,20 @@
       <div class="content-grid grid">
         <table class="table-asset" id="tableAsset">
           <colgroup>
-            <col width="50" />
-            <!-- <col width="120" /> -->
-            <col width="120" />
-            <col min-width="800" />
-            <col min-width="200" />
-            <col min-width="500" />
-            <col width="150" />
-            <col width="100" />
+            <col width="0px" />
+            <col width="0px" />
+            <col min-width="0px" />
+            <col min-width="300px" />
+            <col min-width="0px" />
+            <col width="0px" />
+            <col width="0px" />
           </colgroup>
           <thead>
             <tr>
               <th style="text-align: center">
                 <input
                   @click="checkAll()"
-                  class="checkbox checkboxAll"
+                  class="checkboxAll"
                   type="checkbox"
                 />
               </th>
@@ -91,15 +90,7 @@
               >
                 Tên tài sản
               </th>
-              <th
-                sortProp="type"
-                style="text-align: left"
-                sortOrder="asc"
-                id="columnAssetType"
-                class="hover-pointer"
-              >
-                Loại tài sản
-              </th>
+             
               <th
                 sortProp="department"
                 sortOrder="asc"
@@ -132,20 +123,22 @@
               v-for="(asset, index) in listAsset"
               :key="asset.assetId"
               v-bind:class="selectedRow(asset.assetId) ? 'selected-row' : ''"
-              @click.right="showContexMenu(asset.assetId, $event)"
-              @dblclick="showDialog('update', asset.assetId)"
+              @click="
+                selectRow(index, $event, asset.assetId, 'rowClick')
+              "
             >
               <td style="text-align: center">
                 <input
                   class="checkbox"
-                  @click="selectRow(asset.assetId, $event)"
+                   @click.stop="
+                    selectRow(index, $event, asset.assetId , '')
+                  "
                   type="checkbox"
                 />
               </td>
               <td class="no-border-left">{{ index + 1 }}</td>
               <td>{{ asset.assetCode }}</td>
               <td>{{ asset.assetName }}</td>
-              <td>{{ asset.assetTypeName }}</td>
               <td>{{ asset.departmentName }}</td>
               <td style="text-align: right">
                 {{ asset.originalPrice | formatMoney(asset.originalPrice) }}
@@ -170,7 +163,7 @@
 
       <div class="table-summary">
         <div class="summary">
-          <div class="asset-number">Tổng số tài sản: {{ amountAsset }}</div>
+         
 
           <div class="paging-toolbar">
             <div class="leftchild">
@@ -235,7 +228,6 @@
         </div>
       </div>
 
-      <div id="assetPopup"></div>
     </div>
   </div>
 </template>
@@ -304,6 +296,7 @@ export default {
     };
   },
   methods: {
+    
     // todo check tất cả các check box
     checkAll() {
       this.listSelectRow = []
@@ -326,7 +319,7 @@ export default {
     show() {
       this.listSelectRow = [];
       this.isChoose = true;
-      document.getElementsByClassName("checkbox").forEach((element) => {
+      document.getElementsByClassName("checkboxAll").forEach((element) => {
         element.checked = false;
       });
 
@@ -471,13 +464,57 @@ export default {
       }
     },
 
-    //  select hàng, nếu hàng đã được select thì xóa khỏi mẩng listSelectRow, và ngược lại
-    selectRow(id) {
-      var index = this.listSelectRow.indexOf(id);
-      if (index > -1) {
-        this.listSelectRow.splice(index, 1);
-      } else {
-        this.listSelectRow.push(id);
+   //  select hàng, nếu hàng đã được select thì xóa khỏi mẩng listSelectRow, và ngược lại
+    selectRow(ind, e, id, text) {
+      document.getElementsByClassName('checkboxAll')[0].checked = false
+      if (e.shiftKey) {
+        var idFirst = this.listSelectRow[0];
+        this.listSelectRow = [];
+        this.listSelectRow.push(idFirst);
+
+        // vị trí đầu tiên trong mảng listSelectRow
+        var idStart = this.listSelectRow[0];
+        var indexStart = this.listAssetId.indexOf(idStart);
+
+        var indexEnd = this.listAssetId.indexOf(id);
+        if (indexStart > indexEnd) {
+          indexStart--;
+          var tem = indexStart;
+          indexStart = indexEnd;
+          indexEnd = tem;
+        } else {
+          indexStart++;
+        }
+        for (var i = indexStart; i <= indexEnd; i++) {
+          this.listSelectRow.push(this.listAssetId[i]);
+        }
+      } else if (e.ctrlKey) {
+        var index = this.listSelectRow.indexOf(id);
+        if (index > -1) {
+          this.listSelectRow.splice(index, 1);
+        } else {
+          this.listSelectRow.push(id);
+        }
+      } else if (e.ctrlKey == false && e.shiftKey == false) {
+        if (text != "rowClick") {
+          var index1 = this.listSelectRow.indexOf(id);
+          if (index1 > -1) {
+            this.listSelectRow.splice(index, 1);
+          } else {
+            this.listSelectRow.push(id);
+           
+           
+          }
+        } else {
+          document.getElementsByClassName("checkbox").forEach((el) => {
+            el.checked = false;
+          });
+         
+         
+          this.listSelectRow = [];
+          this.listSelectRow.push(id);
+        }
+       
       }
     },
 
@@ -485,6 +522,8 @@ export default {
     selectedRow(id) {
       if (this.listSelectRow.indexOf(id) > -1) return true;
       else return false;
+
+
     },
 
     // todo xử lý sự kiện mũi tên lên xuống để select row
@@ -610,7 +649,12 @@ export default {
       return num;
     },
   },
-  watch: {},
+  updated() {
+    document.getElementsByClassName("checkbox").forEach(ele => ele.checked = false)
+       document.getElementsByClassName('selected-row').forEach(ele => {
+           ele.firstElementChild.firstElementChild.checked = true
+        })
+  },
   created() {
     //this.getAsset();
     this.processkey();
@@ -1310,5 +1354,54 @@ table thead tr th{
 }
 .div-container {
     border-radius: 4px;
+}
+.btn:hover {
+    cursor: pointer;
+    background-color: rgba(214, 214, 214, 0.829);
+}
+.btn-save:hover{
+   background-color: #29b8ff!important;
+}
+.table-summary {
+    margin-left: 0;
+    background: #f5f5f5;
+}
+.content-grid{
+    margin: 0;
+}
+div#content[data-v-654548ea] {
+    height: 660px;
+    width: 1000px;
+    position: absolute;
+    top: calc((100% - 660px) / 2);
+    left: calc((100% - 1000px) / 2);
+}
+.content-nav .features-pane input {
+    border-radius: 4px;
+}
+table tr td:last-child, table th:last-child{
+  padding-right:34px ;
+}
+table tr td:nth-child(6), table th:nth-child(6){
+  padding-right:34px ;
+}
+table tr td:nth-child(7), table th:nth-child(7){
+  padding-right:34px ;
+}
+.btn {
+    height: 34px!important;
+}
+.table-summary {
+    
+    height: 50px;
+ 
+}
+.paging-toolbar{
+ margin: 0;
+}
+.btn.btn-save{
+    position: absolute;
+    right: 38px;
+    background: #00abfe;
 }
 </style>

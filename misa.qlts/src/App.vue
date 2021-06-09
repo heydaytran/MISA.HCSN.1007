@@ -132,4 +132,8 @@ body {
 .body-container {
   display: flex;
 }
+::-webkit-scrollbar-track {
+    background: transparent;
+    margin-top: 40px;
+}
 </style>

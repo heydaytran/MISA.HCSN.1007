@@ -1231,7 +1231,7 @@ table {
   width: 28px;
 }
 .selected-row {
-  background: #d0d6e4 !important;
+  background: #8dd2f369 !important
 }
 .p-button{
   cursor: pointer;

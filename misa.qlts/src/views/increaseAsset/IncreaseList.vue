@@ -7,7 +7,7 @@
             <div class="text-title">
               <div class="text">Ghi tăng tài sản</div>
             </div>
-            <div class="button-refresh">
+            <div title="Tải lại trang" class="button-refresh" @click="getAssetIncrease()">
               <div class="hover-pointer icon"></div>
             </div>
           </div>
@@ -18,17 +18,32 @@
             >
               Thêm
             </div>
-            <div class="hover-pointer button-option-view"  >
-              <div title="Chế độ xem" class="hover-pointer icon-view"  v-bind:class="{ 'icon-view-all' : viewAll, 'icon-view-detail': !viewAll }"></div>
+            <div class="hover-pointer button-option-view">
+              <div
+                title="Chế độ xem"
+                class="hover-pointer icon-view"
+                v-bind:class="{
+                  'icon-view-all': viewAll,
+                  'icon-view-detail': !viewAll,
+                }"
+              ></div>
               <div title="Chế độ xem" class="hover-pointer icon-arrow"></div>
               <div class="menu-option-view">
-                <div  title="Mặc định" class="item-option option-full"  @click="changeVisual('all')">
+                <div
+                  title="Xem tổng quát"
+                  class="item-option option-full"
+                  @click="changeVisual('all')"
+                >
                   <div v-if="viewAll" class="hover-pointer icon-chosen"></div>
                   <div class="hover-pointer icon-view-all"></div>
                 </div>
-                <div title="Xem chi tiết" class="item-option option-detail" @click="changeVisual('detail')">
-                  <div v-if="!viewAll"  class="hover-pointer icon-chosen"></div>
-                  <div  class="hover-pointer icon-view-detail"></div>
+                <div
+                  title="Xem chi tiết"
+                  class="item-option option-detail"
+                  @click="changeVisual('detail')"
+                >
+                  <div v-if="!viewAll" class="hover-pointer icon-chosen"></div>
+                  <div class="hover-pointer icon-view-detail"></div>
                 </div>
               </div>
             </div>
@@ -53,43 +68,6 @@
           alerMsg
         }}</v-alert> -->
 
-        <div v-show="isFilterMenu" class="filter-menu">
-          <div class="text" @click="sendOption('Tất cả')">Tất cả</div>
-          <div class="item-filter item-type">
-            <div class="text" @click="sendOption('Loại tài sản')">
-              Loại tài sản
-            </div>
-            <div class="menu-container menu-type">
-              <div class="menu-child list-type">
-                <div
-                  class="item"
-                  v-for="(item, index) in listAssetType"
-                  :key="index"
-                  @click="getAsset('filter', '', item.assetTypeId)"
-                >
-                  {{ item.assetTypeName }}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="item-filter item-department">
-            <div class="text" @click="sendOption('Phòng ban')">Phòng ban</div>
-            <div class="menu-container menu-department">
-              <div class="menu-child list-department">
-                <div
-                  class="item"
-                  v-for="(item, index) in listDepartment"
-                  :key="index"
-                  @click="getAsset('filter', item.departmentId, '')"
-                >
-                  {{ item.departmentName }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="features-pane">
           <div class="features-pane-left">
             <input
@@ -98,13 +76,7 @@
               type="text"
               placeholder="Tìm kiếm. "
               v-model="inputSearch"
-              @change="
-                getAsset(
-                  'filter',
-                  comboxFilter.idDepartment,
-                  comboxFilter.idType
-                )
-              "
+              @change="getAssetIncrease('filter')"
             />
             <div class="icon-search"></div>
           </div>
@@ -113,18 +85,15 @@
             <div class="button-print">
               <div class="icon"></div>
             </div>
-           
+
             <div
               id="preventLeftClick"
+              title="Xóa nhiều chứng từ"
               class="btn icon-trash features-pane-item"
               @click="showDeleteDialog()"
             ></div>
-             <div
-              class="btn icon-print features-pane-item"
-            ></div>
-             <div
-              class="btn icon-more features-pane-item"
-            ></div>
+            <div class="btn icon-print features-pane-item" title="In chứng từ"></div>
+            <div class="btn icon-more features-pane-item" title="Tùy chọn"></div>
           </div>
         </div>
 
@@ -132,12 +101,12 @@
       </div>
 
       <div id="loadBar"></div>
-      <div class="content-grid grid">
+      <div class="content-grid-all content-grid grid">
         <table class="table-asset" id="tableAsset">
           <colgroup>
-            <col width="50" />
+            <col width="20" />
             <!-- <col width="120" /> -->
-            <col width="120" />
+            <col width="10" />
             <col min-width="800" />
             <col min-width="200" />
             <col min-width="500" />
@@ -148,7 +117,11 @@
             <tr>
               <th>
                 <div class="checkbox-icon">
-                  <input type="checkbox" />
+                  <input
+                    class="checkbox1 checkboxAll1"
+                    @click="checkAll()"
+                    type="checkbox"
+                  />
                 </div>
               </th>
               <th style="text-align: left">STT</th>
@@ -199,13 +172,13 @@
                 TỔNG NGUYÊN GIÁ
               </th>
 
-              <th style="text-align: left">chức năng</th>
+              <th style="text-align: left"></th>
             </tr>
           </thead>
 
           <tbody>
             <!-- <tr
-              v-for="(asset, index) in listAsset"
+              v-for="(asset, index) in listAssetIncrease"
               :key="asset.assetId"
               v-bind:class="selectedRow(asset.assetId) ? 'selected-row' : ''"
               @click="selectRow(asset.assetId, $event)"
@@ -238,66 +211,52 @@
                 </div>
               </td>
             </tr> -->
-            <tr>
+
+            <tr
+              v-for="(item, index) in listAssetIncrease"
+              v-bind:class="{
+                'selected-row': selectedRow(item.assetIncreaseId),
+                '': !selectedRow(item.assetIncreaseId),
+              }"
+              @click="
+                selectRow(index, $event, item.assetIncreaseId, 'rowClick')
+              "
+              :key="item.assetIncreasesId"
+            >
               <td>
-                <div class="checkbox-icon">
-                  <input type="checkbox" />
-                </div>
+                <input
+                  @click.stop="
+                    selectRow(index, $event, item.assetIncreaseId, '')
+                  "
+                  class="checkbox1"
+                  type="checkbox"
+                />
               </td>
-              <td>hello</td>
-              <td>hello</td>
-              <td>hello</td>
-              <td>hello</td>
-              <td>hello</td>
-              <td>hello</td>
+              <td>{{ index + 1 }}</td>
+              <td>{{ item.exhibitCode }}</td>
+              <td>{{ item.exhibitDate | formatDate(item.exhibitDate) }}</td>
+              <td>{{ item.increaseDate | formatDate(item.increaseDate) }}</td>
+              <td>{{ item.note }}</td>
+              <td style="text-align: right">
+                {{ totalPriceEach[index] | formatMoney(totalPriceEach[index]) }}
+              </td>
               <td class="no-border-right">
                 <div class="features-box">
                   <div
-                    class="table-icon icon-edit-pen"
-                    @click="showDialog('update', asset.assetId)"
+                    class="table-icon icon-edit-pen1"
+                    title="In "
+                  ></div>
+                  <div
+                    class="table-icon icon-trash-table1"
+                    @click.stop="showDialog('update', item.assetIncreaseId)"
                     title="Sửa"
                   ></div>
                   <div
-                    id="preventLeftClick"
-                    class="table-icon icon-trash-table"
-                    @click="showDeleteDialog('inRow')"
+                    class="table-icon icon-refresh-time1"
+                    @click.stop="
+                      showDeleteDialog('inRow', item.assetIncreaseId, $event)
+                    "
                     title="Xóa"
-                  ></div>
-                  <div
-                    class="table-icon icon-refresh-time"
-                    title="Chức năng chưa phát triển"
-                  ></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="checkbox-icon">
-                  <input type="checkbox" />
-                </div>
-              </td>
-              <td>hello</td>
-              <td>hello</td>
-              <td>hello</td>
-              <td>hello</td>
-              <td>hello</td>
-              <td>hello</td>
-              <td class="no-border-right">
-                <div class="features-box">
-                  <div
-                    class="table-icon icon-edit-pen"
-                    @click="showDialog('update', asset.assetId)"
-                    title="Sửa"
-                  ></div>
-                  <div
-                    id="preventLeftClick"
-                    class="table-icon icon-trash-table"
-                    @click="showDeleteDialog('inRow')"
-                    title="Xóa"
-                  ></div>
-                  <div
-                    class="table-icon icon-refresh-time"
-                    title="Chức năng chưa phát triển"
                   ></div>
                 </div>
               </td>
@@ -307,100 +266,145 @@
 
           <div v-show="getEmty" class="loading-emty">Không có dữ liệu</div>
         </table>
-        <div class="ctx-menu" id="ctxMenu">
-          <div class="ctx-menu-item" @click="showDialog('insert', 0)">Thêm</div>
-          <div
-            class="ctx-menu-item"
-            @click="showDialog('update', listSelectRow[0])"
-          >
-            Sửa
-          </div>
-          <div
-            id="preventLeftClick"
-            class="ctx-menu-item"
-            @click="showDeleteDialog(listSelectRow[0])"
-          >
-            Xóa
-          </div>
-        </div>
       </div>
 
-      <div class="table-summary">
-        <div class="summary">
-          <div class="asset-number">Tổng số tài sản: {{ amountAsset }}</div>
+     <div class="grid-detail-container">
+        <div class="header-table-detail text-title">
+          <div @mousedown="resizeDetail($event)" class="resize-icon">
+            <div class="icon-top"></div>
+            <div class="icon-center"></div>
+            <div class="icon-bottom"></div>
+          </div>
+        </div>
+        <div class="title">
+          Thông tin chi tiết
+        </div>
+      <div class="content-grid-detail content-grid grid">
+        <table class="table-detail table-asset" id="tableAsset">
+          <colgroup>
+            <col width="50" />
+            <!-- <col width="120" /> -->
+            <col width="120" />
+            <col min-width="500" />
+            <col min-width="500" />
+            <col min-width="500" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th style="text-align: left">STT</th>
 
-          <div class="paging-toolbar">
-            <div class="leftchild">
-              <div
-                class="p-button first-page"
-                @click="paging.pageNumber = 1"
-              ></div>
-              <div class="p-button prev-page" @click="backPage()"></div>
-              <div style="margin: 0 16px 0 4px">Trang</div>
-              <input
-                type="number"
-                class="text-pagebumber"
-                v-model="paging.pageNumber"
-              />
-              <div style="margin: 0 16px 0 6px">
-                Trên {{ paging.amountPage }}
-              </div>
-
-              <div class="p-button next-page" @click="nextPage()"></div>
-              <div
-                class="p-button last-page"
-                @click="paging.pageNumber = paging.amountPage"
-              ></div>
-              <div class="p-button refresh" @click="getAsset()"></div>
-              <select
-                name=""
-                id=""
-                class="select-quantitypage"
-                v-model="paging.recordNumber"
-                @change="getAsset('filter')"
+              <th
+                sortProp="code"
+                sortOrder="asc"
+                id="columnAssetCode"
+                class="hover-pointer"
+                style="text-align: left"
               >
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-            </div>
-          </div>
+                Mã tài sản
+              </th>
+              <th
+                sortProp="code"
+                sortOrder="asc"
+                id="columnAssetCode"
+                class="hover-pointer"
+                style="text-align: left"
+              >
+                Bộ phận sử dụng
+              </th>
+              <th
+                sortProp="code"
+                sortOrder="asc"
+                id="columnAssetCode"
+                class="hover-pointer"
+                style="text-align: right"
+              >
+                Nguyên giá
+              </th>
+              <th
+                sortProp="name"
+                sortOrder="asc"
+                id="columnAssetName"
+                class="hover-pointer"
+                style="text-align: right"
+              >
+                HM/KH lũy kế
+              </th>
+              <th
+                sortProp="department"
+                sortOrder="asc"
+                id="columnDepartment"
+                class="hover-pointer"
+                style="text-align: right"
+              >
+                Giá trị còn lại
+              </th>
+            </tr>
+          </thead>
 
-          <div class="price-number">
-            Tổng nguyên giá: {{ totalPrice | formatMoney() }}
-          </div>
-        </div>
+          <tbody>
+           
+            <tr
+              v-for="(item, index) in increaseDetails"
+              v-show="listAssetIncrease[indexDetail] !== undefined"
+              v-bind:class="
+                selectedRow(item.assetIncreaseId) ? 'selected-row' : ''
+              "
+              :key="item.assetIncreasesId"
+            >
+              <td>{{ index + 1 }}</td>
+              <td :title="item.assetCode">{{ item.assetCode }}</td>
+              <td :title="item.departmentName">{{ item.departmentName }}</td>
+              <td :title="item.originalPrice | formatMoney(item.originalPrice)" style="text-align: right">
+                {{ item.originalPrice | formatMoney(item.originalPrice) }}
+              </td>
+              <td style="text-align: right" :title="item.wearValue | formatMoney(item.wearValue)">
+                {{ item.wearValue | formatMoney(item.wearValue) }}
+              </td>
+              <td style="text-align: right" :title="item.resValue
+                    | formatMoney(item.resValue)">
+                {{
+                  item.resValue
+                    | formatMoney(item.resValue)
+                }}
+              </td>
+            </tr>
+          </tbody>
+          <BaseLoading ref="BaseLoading_ref" />
+
+          <div v-show="getEmty" class="loading-emty">Không có dữ liệu</div>
+        </table>
       </div>
+     </div>
+    
 
       <div id="assetPopup"></div>
     </div>
 
     <ModalCreate
       ref="ModalCreateAsset_ref"
-      :listDepartment="listDepartment"
-      :listAssetType="listAssetType"
       :formMode="formMode"
       :assetIdUpdate="assetIdUpdate"
       @reload="reload"
       @msgAlert="msgAlert"
     />
-    <ModalDeleteAsset
+    <ModaDelete
       @reload="reload"
       :listSelectRow="listSelectRow"
       ref="ModalDeleteAsset_ref"
+      :formMode="formMode"
     />
   </div>
 </template>
 
 <script>
 import ModalCreate from "../../components/modal/increaseAssetModal/ModalCreate.vue";
-import ModalDeleteAsset from "../../components/modal/ModalDeleteAsset.vue";
+import ModaDelete from "../../components/modal/increaseAssetModal/ModalDelete.vue";
 import BaseLoading from "../../components/common/BaseLoading.vue";
 import axios from "axios";
 
 export default {
   components: {
-    ModalDeleteAsset,
+    ModaDelete,
     ModalCreate,
     BaseLoading,
   },
@@ -409,25 +413,13 @@ export default {
   },
   data() {
     return {
-      listAsset: [],
-      asset: {
-        assetId: null,
-        assetCode: null,
-        assetName: null,
-        departmentId: null,
-        assetTypeId: null,
-        timeUse: null,
-        wearRate: null,
-        originalPrice: null,
-        wearValue: null,
-      },
-      listDepartment: [],
-      listAssetType: [],
+      listAssetIncrease: [],
+      indexDetail: 0, // vị trí của bản ghi muốn xem detail
       formMode: "",
       alerMsg: "",
       assetIdUpdate: null,
       listSelectRow: [],
-      listAssetId: [],
+      listAssetIncreaseId: [],
       inputSearch: "",
       showSuccess: false,
       isError: false,
@@ -444,18 +436,15 @@ export default {
         startRecord: 0,
         endRecord: 0,
       },
-      showMenuFilter: true,
-      showMenuType: false,
-      showMenuDepartment: true,
-      comboxFilter: {
-        idDepartment: null,
-        idType: null,
-        allAsset: "tất cả",
-      },
-      viewAll:true
+      totalPriceEach: [], // tổng nguyên giá mỗi chứng từ ghi tăng
+      viewAll: false,
+      detailReady: false, // = true khi load đc hết các bản ghi
+      resizing: false, // có cho phép resize k
+      increaseDetails: [],
     };
   },
   methods: {
+    // todo nhận các câu thông báo cho modal thông báo
     msgAlert(text, value) {
       this.showWarning = value;
       this.alerMsg = text;
@@ -465,90 +454,88 @@ export default {
         res.showWarning = false;
       }, 3000);
     },
-    //todo gửi option tìm kiếm lên combobox tại header
-    sendOption(text) {
-      if (text == "Tất cả") {
-        this.getAsset("filter");
-        this.comboxFilter.idDepartment = "";
-        this.comboxFilter.idType = "";
+
+    //todo hủy chọn các checkbox
+    turnOffCheck() {
+      document.getElementsByClassName("checkbox1").forEach((e) => {
+        e.checked = false;
+      });
+    },
+    // todo đổi tiền tệ kiểu string về số
+     fomatMoneyToNumber(value) {
+      if (value != "") {
+        return parseFloat(value.split(".").join(""));
       }
-      this.$emit("allAsset", text);
+      return 0;
     },
     /**
      * Gửi request GET tới API
      * Author: TVThinh (12/5/2021)
      */
-    // async getAsset(text, idDepartment, idType) {
-    //   // xử lý filter trên thanh combobox
-    //   if (idDepartment == undefined || idDepartment == "")
-    //     this.comboxFilter.idDepartment = "";
-    //   else {
-    //     this.sendOption("Phòng ban"); // gửi dòng chữ 'phòng ban' hiển thị lên combobox
-    //     this.comboxFilter.idDepartment = idDepartment;
-    //   }
-    //   if (idType == undefined || idType == "") this.comboxFilter.idType = "";
-    //   else {
-    //     this.sendOption("Loại tài sản");
-    //     this.comboxFilter.idType = idType;
-    //   }
+    async getAssetIncrease(text) {
+      if (text == "filter") this.paging.pageNumber = 1;
+      else this.inputSearch = "";
 
-    //   if (text == "filter") this.paging.pageNumber = 1;
+      this.turnOffCheck();
+      this.detailReady = false;
+      var res = this;
+      this.listSelectRow = [];
 
-    //   var res = this;
-    //   this.listSelectRow = [];
+      res.$refs.BaseLoading_ref.show();
+      this.getEmty = false;
+      this.amountAsset = 0;
+      this.totalPrice = 0;
 
-    //   res.$refs.BaseLoading_ref.show();
-    //   this.getEmty = false;
-    //   this.amountAsset = 0;
-    //   this.totalPrice = 0;
+      if (document.getElementById("ctxMenu"))
+        // nếu context menu vẫn hiện
+        document.getElementById("ctxMenu").style.display = "none";
 
-    //   if (document.getElementById("ctxMenu"))
-    //     // nếu context menu vẫn hiện
-    //     document.getElementById("ctxMenu").style.display = "none";
+      await axios
+        .get(
+          "https://localhost:44382/api/v1/AssetIncreases/Filter/?input=" +
+            res.inputSearch +
+            "&recordAmount=" +
+            this.paging.recordNumber +
+            "&pageNumber=" +
+            this.paging.pageNumber
+        )
+        .then((response) => {
+          res.listAssetIncrease = response.data.data;
+          res.detailReady = true;
 
-    //   await axios
-    //     .get(
-    //       "https://localhost:44382/api/v1/Assets/Filter/?input=" +
-    //         res.inputSearch +
-    //         "&recordAmount=" +
-    //         this.paging.recordNumber +
-    //         "&pageNumber=" +
-    //         this.paging.pageNumber +
-    //         "&departmentId=" +
-    //         this.comboxFilter.idDepartment +
-    //         "&typeId=" +
-    //         this.comboxFilter.idType
-    //     )
-    //     .then((response) => {
-    //       res.listAsset = response.data.data;
+          if (res.listAssetIncrease.length == 0) {
+            res.getEmty = true;
+          }
 
-    //       if (res.listAsset.length == 0) {
-    //         res.getEmty = true;
-    //       }
+          res.$refs.BaseLoading_ref.hide();
+          res.listAssetIncreaseId = [];
+          res.paging.amountPage = response.data.totalPage;
 
-    //       res.$refs.BaseLoading_ref.hide();
-    //       res.listAssetId = [];
-    //       res.paging.amountPage = response.data.totalPage;
+          res.listAssetIncrease.forEach((element, index) => {
+            res.totalPriceEach[index] = 0;
+            // duyệt qua tất cả các bản ghi
+            
+            res.listAssetIncrease[index].increaseDetail = JSON.parse(
+              element.increaseDetail
+            );
+            res.listAssetIncrease[index].increaseDetail.forEach((item) => {
+               typeof item.originalPrice === "string" ? item.originalPrice = this.fomatMoneyToNumber(item.originalPrice) : item.originalPrice;
+              res.totalPriceEach[index] += item.originalPrice;
+            });
+            res.listAssetIncreaseId.push(element.assetIncreaseId); // push tất cả id tài sản vào mảng
+            res.amountAsset++; // đếm tổng số bản ghi
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          setTimeout(() => {
+            res.$refs.BaseLoading_ref.hide(); // tắt dialog loading
+            res.getEmty = true; // b
+          }, 4000);
+        });
+    },
 
-    //       res.listAsset.forEach((element) => {
-    //         // duyệt qua tất cả các bản ghi
-    //         res.listAssetId.push(element.assetId); // push tất cả id tài sản vào mảng
-    //         res.amountAsset++; // đếm tổng số bản ghi
-    //         if (element.originalPrice != null) {
-    //           res.totalPrice += parseInt(element.originalPrice); // tính tổng nguyên giá
-    //         }
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //       setTimeout(() => {
-    //         res.$refs.BaseLoading_ref.hide(); // tắt dialog loading
-    //         res.getEmty = true; // b
-    //       }, 4000);
-    //     });
-    // },
-
-    // async getAsset() {
+    // async getAssetIncrease() {
     //   await axios.get("http://localhost:56697/api/v1/");
     // },
 
@@ -568,52 +555,38 @@ export default {
       }, 300);
       // debugger; // eslint-disable-line no-debugger
     },
-    /// todo lấy ra các phòng ban
-    async getDepartment() {
-      var res = this;
-      await axios
-        .get("https://localhost:44382/api/v1/Departments")
-        .then((response) => {
-          res.listDepartment = response.data.data;
-        })
-        .catch((error) => {
-          this.errorMessage = error.message;
-          console.error("GET Department Failed: ", error.message);
-        });
-    },
-
-    ///  todo lấy ra các loại tài sản
-    async getAssetType() {
-      var res = this;
-      await axios
-        .get("https://localhost:44382/api/v1/AssetTypes")
-        .then((response) => {
-          res.listAssetType = response.data.data;
-        })
-        .catch((error) => {
-          this.errorMessage = error.message;
-          console.error("GET AssetType Failed: ", error.message);
-        });
-    },
 
     // todo tải lại dữ liệu
     reload(value) {
       if (value == true) {
-        this.getAsset("");
+        this.getAssetIncrease("");
         this.showSuccess = true;
         setTimeout(() => {
           this.showSuccess = false;
-        }, 6000);
+        }, 3000);
       }
     },
 
     //todo hiển thị form xác nhận xóa
-    showDeleteDialog(text) {
+    showDeleteDialog(text, id, e) {
       // var res = this
       this.alerMsg = "Xóa thành công!";
       if (text != "inRow" && this.listSelectRow.length == 0) {
         this.showWarning = true;
         this.alerMsg = "Vui lòng chọn bản ghi";
+      } else if (text == "inRow") {
+        this.indexDetail = this.listAssetIncreaseId.indexOf(id);
+        this.increaseDetails =
+          this.listAssetIncrease[this.indexDetail].increaseDetail;
+
+        document.getElementsByClassName("checkbox1").forEach((i) => {
+          i.checked = false;
+        });
+        e.target.parentElement.parentElement.previousSibling.previousSibling.previousSibling.previousSibling.previousSibling.previousSibling.previousSibling.firstElementChild.checked = true;
+
+        this.listSelectRow = [];
+        this.listSelectRow.push(id);
+        this.$refs.ModalDeleteAsset_ref.show();
       } else {
         this.$refs.ModalDeleteAsset_ref.show();
         this.showWarning = false;
@@ -624,39 +597,29 @@ export default {
     },
 
     //  select hàng, nếu hàng đã được select thì xóa khỏi mẩng listSelectRow, và ngược lại
-    selectRow(id, event) {
-      document.getElementById("ctxMenu").style.display = "none";
-      if (event.ctrlKey == false && event.shiftKey == false) {
-        this.listSelectRow = [];
-        this.listSelectRow.push(id);
-      } else if (event.shiftKey) {
-        var idFirst = this.listSelectRow[0];
-        this.listSelectRow = [];
-        this.listSelectRow.push(idFirst);
-
-        // vị trí đầu tiên trong mảng listSelectRow
-        var idStart = this.listSelectRow[0];
-        var indexStart = this.listAssetId.indexOf(idStart);
-
-        var indexEnd = this.listAssetId.indexOf(id);
-        if (indexStart > indexEnd) {
-          indexStart--;
-          var tem = indexStart;
-          indexStart = indexEnd;
-          indexEnd = tem;
-        } else {
-          indexStart++;
-        }
-        for (var i = indexStart; i <= indexEnd; i++) {
-          this.listSelectRow.push(this.listAssetId[i]);
-        }
-      } else if (event.ctrlKey) {
+    selectRow(ind, e, id, text) {
+      if (text != "rowClick") {
         var index = this.listSelectRow.indexOf(id);
         if (index > -1) {
           this.listSelectRow.splice(index, 1);
         } else {
           this.listSelectRow.push(id);
+          this.indexDetail = this.listAssetIncreaseId.indexOf(
+            this.listSelectRow[0]
+          );
+          this.increaseDetails =
+            this.listAssetIncrease[this.indexDetail].increaseDetail;
         }
+      } else {
+        document.getElementsByClassName("checkbox1").forEach((el) => {
+          el.checked = false;
+        });
+        e.target.parentElement.firstElementChild.firstElementChild.checked = true;
+        this.indexDetail = ind;
+        this.increaseDetails =
+          this.listAssetIncrease[this.indexDetail].increaseDetail;
+        this.listSelectRow = [];
+        this.listSelectRow.push(id);
       }
     },
 
@@ -664,71 +627,6 @@ export default {
     selectedRow(id) {
       if (this.listSelectRow.indexOf(id) > -1) return true;
       else return false;
-    },
-
-    // todo xử lý sự kiện mũi tên lên xuống để select row
-    processkey() {
-      var res = this;
-      document.addEventListener("keydown", function (e) {
-        var len1 = res.listSelectRow.length; // số phần tử của mảng listSelectRow
-        var len2 = res.listAssetId.length; //số phần tử của mảng listAssetId
-        if (res.$refs.ModalCreateAsset_ref.isActive == false) {
-          switch (e.keyCode) {
-            case 38:
-              {
-                //up arrow
-                if (
-                  len1 == 0 ||
-                  res.listAssetId.indexOf(res.listSelectRow[0]) == 0
-                ) {
-                  res.listSelectRow = [];
-                  res.listSelectRow.push(res.listAssetId[len2 - 1]);
-                } else if (len1 > 0) {
-                  //res.listSelectRow = [];
-                  var indexIdFirst = res.listAssetId.indexOf(
-                    res.listSelectRow[0]
-                  );
-                  res.listSelectRow = [];
-                  res.listSelectRow.push(res.listAssetId[indexIdFirst - 1]);
-                }
-              }
-              break;
-            case 40:
-              {
-                // //down arrow
-                if (
-                  len1 == 0 ||
-                  res.listAssetId.indexOf(res.listSelectRow[len1 - 1]) ==
-                    len2 - 1
-                ) {
-                  res.listSelectRow = [];
-                  res.listSelectRow.push(res.listAssetId[0]);
-                } else if (len1 > 0) {
-                  //res.listSelectRow = [];
-                  var indexIdLast = res.listAssetId.indexOf(
-                    res.listSelectRow[len1 - 1]
-                  );
-                  res.listSelectRow = [];
-                  res.listSelectRow.push(res.listAssetId[indexIdLast + 1]);
-                }
-              }
-              break;
-            case 37:
-              {
-                res.backPage();
-              }
-              break;
-            case 39:
-              {
-                res.nextPage();
-              }
-              break;
-            default: {
-              return true;
-            }
-          }
-        }
-      });
     },
 
     // todo hiện và thao tác với context menu
@@ -745,53 +643,130 @@ export default {
     nextPage() {
       if (this.paging.pageNumber < this.paging.amountPage) {
         this.paging.pageNumber++;
-        this.getAsset();
+        this.getAssetIncrease();
       }
     },
     // todo chuyển đến trang trước
     backPage() {
       if (this.paging.pageNumber > 1) {
         this.paging.pageNumber--;
-        this.getAsset();
+        this.getAssetIncrease();
       }
     },
 
     // todo thay đổi khung nhìn
-    changeVisual(text)
-    {
-      if(text == 'all')
-      {
-        this.viewAll = true
-        document.getElementsByClassName('option-full')[0].style.background='#f5f5f5'
-        document.getElementsByClassName('option-detail')[0].style.background='white'
-        
+    changeVisual(text) {
+      if (text == "all") {
+        document.getElementsByClassName("content-grid-all")[0].style.height =
+          "calc(100% - 140px)";
+
+        document.getElementsByClassName(
+          "content-grid-detail"
+        )[0].style.display = "none";
+        this.viewAll = true;
+        document.getElementsByClassName("option-full")[0].style.background =
+          "#f5f5f5";
+        document.getElementsByClassName("option-detail")[0].style.background =
+          "white";
+      } else {
+        this.viewAll = false;
+        document.getElementsByClassName("content-grid-all")[0].style.height =
+          "calc(100% - 315px)";
+
+        document.getElementsByClassName(
+          "content-grid-detail"
+        )[0].style.display = "block";
+        document.getElementsByClassName("option-full")[0].style.background =
+          "white";
+        document.getElementsByClassName("option-detail")[0].style.background =
+          "#f5f5f5";
       }
-      else {
-        this.viewAll = false
-        document.getElementsByClassName('option-full')[0].style.background='white'
-        document.getElementsByClassName('option-detail')[0].style.background='#f5f5f5'
-        
+    },
+    // todo check tất cả các check box
+    checkAll() {
+      var res = this;
+      if (document.getElementsByClassName("checkboxAll1")[0].checked == true) {
+        this.listAssetIncreaseId.forEach((id) => {
+          res.listSelectRow.push(id);
+        });
+        document.getElementsByClassName("checkbox1").forEach((element) => {
+          element.checked = true;
+        });
+      } else {
+        res.listSelectRow = [];
+        document.getElementsByClassName("checkbox1").forEach((element) => {
+          element.checked = false;
+        });
       }
-    }
+    },
+    // todo thay đổi kích thước bảng detail
+    resizeDetail(event) {
+      console.log(this.resizing);
+      this.resizing = true;
+      console.log(this.resizing);
+
+      var tableDetail = document.getElementsByClassName(
+        "content-grid-detail"
+      )[0];
+      var tableAssetIncrease =
+        document.getElementsByClassName("content-grid-all")[0];
+
+      window.addEventListener("mousemove", mousemove);
+      window.addEventListener("mouseup", mouseup);
+
+      var prevY = event.clientY;
+
+      function mousemove(event) {
+        if (!this.resizing) {
+          var rect1 = tableDetail.getBoundingClientRect();
+          var rect2 = tableAssetIncrease.getBoundingClientRect();
+
+          var newheight1 = rect1.height + (prevY - event.clientY);
+          var newheight2 = rect2.height - (prevY - event.clientY);
+          if (newheight1 > 175 && newheight1 < 375) {
+            tableDetail.style.height = newheight1.toFixed() + "px";
+            tableAssetIncrease.style.height = newheight2.toFixed() + "px";
+          }
+
+          prevY = event.clientY;
+        }
+      }
+      function mouseup() {
+        window.removeEventListener("mousemove", mousemove);
+        window.removeEventListener("mouseup", mouseup);
+      }
+    },
   },
   filters: {
-    // todo định dạng kiểu tiền tệ cho nguyên giá
+    // todo định dạng kiểu tiền tệ cho nguyxên giá
     formatMoney: function (money) {
-      if (money != null)
-        var num = money.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
-      else return "0";
+      if (money != null) {
+        
+        var num = money.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+      } else return "0";
       return num;
+    },
+
+    // định dạng ngày
+    formatDate(inputDate) {
+      var a = new Date(inputDate);
+      var month = a.getMonth();
+      var day = a.getDate();
+      if (month < 10) month = "0" + month.toString();
+      if (day < 10) day = "0" + day.toString();
+      var date = day + "/" + month + "/" + a.getFullYear().toString();
+      return date;
     },
   },
   watch: {},
+  beforeCreate() {
+    this.indexDetail = 0;
+  },
   created() {
-    //this.getAsset();
-    this.processkey();
+    //this.getAssetIncrease();
   },
   mounted() {
-    this.getDepartment();
-    this.getAssetType();
-    // this.getAsset();
+    this.getAssetIncrease();
   },
 };
 </script>
@@ -1048,16 +1023,16 @@ table tbody tr {
 }
 
 .selected-row {
-  background: #a1adb3 !important;
+  background: #8dd2f369 !important
 }
 
 .v-sheet.v-alert {
   position: absolute;
-  z-index: 2;
+  z-index: 1001;
   right: 0px;
 
   animation-name: alert;
-  width: 0px;
+  width: 220px;
   animation-duration: 3s;
   white-space: nowrap;
   padding: 16px 0px;
@@ -1066,7 +1041,8 @@ table tbody tr {
 
 @keyframes alert {
   0% {
-    width: 0px;
+    width: 220px;
+    padding: 16px;
   }
   50% {
     width: 220px;
@@ -1212,7 +1188,7 @@ table tbody tr td {
   text-align: center;
 }
 .table-icon.icon-refresh-time {
-    background-size: 20px!important;
+  background-size: 20px !important;
 }
 
 .select-quantitypage {
@@ -1221,9 +1197,7 @@ table tbody tr td {
   background-position: 29px 11px;
   padding-left: 4px;
 }
-::-webkit-scrollbar {
-  display: none;
-}
+
 
 .filter-menu {
   height: 80px;
@@ -1355,12 +1329,17 @@ table {
 .button-refresh {
   padding-left: 20px;
 }
+
 .button-refresh .icon {
-  height: 20px;
-  width: 20px;
-  background-image: url("../../assets/icon/refresh1.png");
+  height: 34px;
+  width: 34px;
+  background: url(../../assets/icon/qlts-icon.svg) no-repeat -103px -61px;
+ 
   background-repeat: no-repeat;
-  background-size: contain;
+  border-radius: 4px;
+}
+.button-refresh .icon:hover {
+  border: 1px solid #b1adad;
 }
 
 .input-search {
@@ -1438,7 +1417,7 @@ table tbody {
   box-shadow: 2px 2px 10px #c3c3c3;
   padding-top: 5px;
 }
- .icon-view-all {
+.icon-view-all {
   height: 20px;
   width: 20px;
   background-image: url("../../assets/icon/view-full.png");
@@ -1469,94 +1448,356 @@ table tbody {
   display: flex;
   cursor: pointer;
 }
-.panel-feature-top .panel-feature .icon-view-detail{
-    position: absolute;
-    right: -9px;
+.panel-feature-top .panel-feature .icon-view-detail {
+  position: absolute;
+  right: -9px;
 }
 .panel-feature-top .panel-feature .item-option {
-    display: flex;
-    width: 40px;
-    position: relative;
+  display: flex;
+  width: 40px;
+  position: relative;
 }
 
- .option-detail{
-  margin-top:5px;
+.option-detail {
+  margin-top: 5px;
 }
 
-.panel-feature-top .panel-feature .item-option{
-    width: 100%;
-    height: 50%;
-    position: relative;
+.panel-feature-top .panel-feature .item-option {
+  width: 100%;
+  height: 50%;
+  position: relative;
 }
-.panel-feature-top .panel-feature .icon-chosen{
-    height: 20px;
-    width: 20px;
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKpSURBVEhL1ZTfS1NhGMf7N7oMoruwbsIiCKIUL4RCCOwuvFBKKA203zbN8EdFJKWUXRTO1mJz0zZ/m87MmmNay9zS1jbd3OZ+nZ3t+tv7vLHDzs4xIojo4nPxvs/zfN/3fJ/nPTuy2Sz+Bv9WOJ5OIpiMIiUKqnE1thVOpFMY9znR7RrG1Q99qJt7iib7C/Quj8EWcKnW5KMqHEhEcMuhx3HLTZSP3EaNrQcN889QNf0QZdYWvv/g4xBCyS1FbQ6FsD8RxsmxNhwyX0aPawTO0Cq8sRDW2WFrsQ3Ygx7cWTRhn/EiamcfY4NZVKhBKITpk3frz2HCt8jtKIwTMea5YXUORYZ6tDpeqebIhLUr09ijr8XA2rwsSY2UmGZ2vMYBUwOGvQ5FXCZ8drYHx5h/+Xv5JNICdB4bvzGtXeHv3O8Op1GRKwkn2SgdGbqGG/Z+vs5kMtgSEtxfgd2OGqVZ0KHYfAnvgys8h/pxfq4X1TPdPCenRUjC7qifF9E40VrMiNznM2+6YFx9h+aFlyixaNDnnpZENlMxtDsNOD15D774piRKSMLU3cODV9C5OMDXIruxI/SVTUg79rMJKBtuwfOVKcSEnzbkamjG6fBIKi7tEzKPK9nJlZN3pTW9tCn/EhrZDNNNC4vd0QAqxjpw3a6V7RMy4S7W5SJDHd6uL0t7JE4zTH7n5wqiiH73DA6yedd7ZmUxQibsZz5VjLej1NoMz1ZAllgI2VRi1aDa9oj/RwrjMmGCCuiBkKfzG19ksRzjrKnF5kYctTThU9irmqMQJtzstqXsNrt0NbzjTz6PwsQeDVlVPtKKndoqnJroxLdYUFGbQ1WYiApx3F8axInRNvZfqMdewwU+HdRcOkitJp9thfMhD5cjPkUDf8VvCf8J/5twFj8AZJXbCDaq+F8AAAAASUVORK5CYII=);
-    background-repeat: no-repeat;
-    background-size: contain;
-    position: absolute;
-    left: 12px;
+.panel-feature-top .panel-feature .icon-chosen {
+  height: 20px;
+  width: 20px;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKpSURBVEhL1ZTfS1NhGMf7N7oMoruwbsIiCKIUL4RCCOwuvFBKKA203zbN8EdFJKWUXRTO1mJz0zZ/m87MmmNay9zS1jbd3OZ+nZ3t+tv7vLHDzs4xIojo4nPxvs/zfN/3fJ/nPTuy2Sz+Bv9WOJ5OIpiMIiUKqnE1thVOpFMY9znR7RrG1Q99qJt7iib7C/Quj8EWcKnW5KMqHEhEcMuhx3HLTZSP3EaNrQcN889QNf0QZdYWvv/g4xBCyS1FbQ6FsD8RxsmxNhwyX0aPawTO0Cq8sRDW2WFrsQ3Ygx7cWTRhn/EiamcfY4NZVKhBKITpk3frz2HCt8jtKIwTMea5YXUORYZ6tDpeqebIhLUr09ijr8XA2rwsSY2UmGZ2vMYBUwOGvQ5FXCZ8drYHx5h/+Xv5JNICdB4bvzGtXeHv3O8Op1GRKwkn2SgdGbqGG/Z+vs5kMtgSEtxfgd2OGqVZ0KHYfAnvgys8h/pxfq4X1TPdPCenRUjC7qifF9E40VrMiNznM2+6YFx9h+aFlyixaNDnnpZENlMxtDsNOD15D774piRKSMLU3cODV9C5OMDXIruxI/SVTUg79rMJKBtuwfOVKcSEnzbkamjG6fBIKi7tEzKPK9nJlZN3pTW9tCn/EhrZDNNNC4vd0QAqxjpw3a6V7RMy4S7W5SJDHd6uL0t7JE4zTH7n5wqiiH73DA6yedd7ZmUxQibsZz5VjLej1NoMz1ZAllgI2VRi1aDa9oj/RwrjMmGCCuiBkKfzG19ksRzjrKnF5kYctTThU9irmqMQJtzstqXsNrt0NbzjTz6PwsQeDVlVPtKKndoqnJroxLdYUFGbQ1WYiApx3F8axInRNvZfqMdewwU+HdRcOkitJp9thfMhD5cjPkUDf8VvCf8J/5twFj8AZJXbCDaq+F8AAAAASUVORK5CYII=);
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: absolute;
+  left: 12px;
 }
 .panel-feature-top .panel-feature .icon-view-all {
-    right: 4px;
+  right: 4px;
 }
 .panel-feature-top .panel-feature .icon-view-detail {
-    position: absolute;
-    right: 4px;
+  position: absolute;
+  right: 4px;
 }
 
-.menu-option-view .item-option:hover{
+.menu-option-view .item-option:hover {
   background: #f5f5f5;
 }
-.menu-option-view .option-full{
+.menu-option-view .option-full {
   background: #f5f5f5;
 }
 .panel-feature-top .panel-feature .icon-view {
   position: inherit;
 }
-.menu-option-view{
-  display: none!important;;
+.menu-option-view {
+  display: none !important;
 }
-.button-option-view:hover .menu-option-view{
-  display: block!important;
+.button-option-view:hover .menu-option-view {
+  display: block !important;
 }
-.content-nav .features-pane input{
-    border-radius: 2px;
+.content-nav .features-pane input {
+  border-radius: 2px;
 }
-.icon-print{
-  background-image: url("../../assets/icon/print-removebg.png");
+
+.icon-print {
+  background: url(../../assets/icon/qlts-icon.svg) no-repeat -324px -60px;
+}
+.icon-print:hover {
+  background-color: rgba(214, 214, 214, 0.6);
+}
+.icon-print {
   background-repeat: no-repeat;
-    background-position: center;
-    opacity: 0.8;
+  opacity: 0.8;
 }
 .content-nav .features-pane .btn {
-    padding: 16px!important;
-    /* width: 34px; */
+  padding: 16px !important;
+  /* width: 34px; */
 }
-.icon-more{
-  background-image: url("../../assets/icon/option-more.png");
-background-repeat: no-repeat;
-    background-position: center;
+.icon-more {
+  background: url(../../assets/icon/qlts-icon.svg) no-repeat -368px -17px;
+  background-repeat: no-repeat;
+}
+.icon-more:hover {
+  background-color: rgba(214, 214, 214, 0.6);
 }
 .content-nav {
-    background: white;
-     border: 1px solid #d0cece;
-    box-shadow: 0px 0px 20px #bbb6b6;
-    box-sizing: border-box;
-    border-bottom:none ;
+  background: white;
+  border: 1px solid #d0cece;
+  box-shadow: 0px 0px 20px #bbb6b6;
+  box-sizing: border-box;
+  border-bottom: none;
 }
 .content-grid {
-    margin: 0 16px;
-    box-sizing: border-box;
-    border: 1px solid #d0cece;
-    box-shadow: 0px 12px 20px #bbb6b6;
+  margin: 0 16px;
+  box-sizing: border-box;
+  border: 1px solid #d0cece;
 }
-table tbody tr td{
+table tbody tr td {
   border-right: none;
 }
 
 .feature-right .button-option-view .menu-option-view {
-    top: 33px;
+  top: 33px;
+}
+.content-grid {
+  height: calc(100% - 315px);
+}
+.content-grid-detail {
+  height: 175px;
+}
+.header-table-detail {
+  height: 0px;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+}
+.header-table-detail {
+  position: fixed;
+  z-index: 2;
+  width: 100%;
+  padding-right: 16px;
+}
+.table-detail thead tr th {
+  text-transform: uppercase;
+  font-size: 11px;
+  color: #1d3464;
+  position: sticky;
+  top: 40px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.table-detail tbody {
+  margin-top: 38px;
+}
+.header-table-detail {
+  position: fixed;
+  z-index: 2;
+  /* width: 87%; */
+  /* width: 324px; */
+  width: 78%;
+  background: white;
+  padding-right: 16px;
+}
+.table-summary {
+  bottom: -20px;
+}
+.menu-option-view .option-detail {
+  background: #f5f5f5;
+}
+.menu-option-view .option-full {
+  background: white;
 }
 
+.header-table-detail {
+  position: fixed;
+  z-index: 2;
+  /* width: 87%; */
+  /* width: 632px; */
+  width: calc(100% - 244px);
+  padding: 0;
+  /* width: 200px; */
+  /* width: auto; */
+  box-sizing: border-box;
+  background: white;
+  /* padding-right: 73px; */
+  /* padding-right: 26px; */
+}
+.header-table-detail .text {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+}
+.table-summary {
+  bottom: -28px;
+}
+
+.checkbox-fake {
+  height: 16px;
+  width: 16px;
+  background: red;
+  position: absolute;
+}
+.checkbox-content {
+  height: 16px;
+  width: 16px;
+  background: red;
+  position: absolute;
+}
+.table-detail tr td:last-child,
+.table-detail thead th:last-child {
+  padding-right: 30px;
+}
+.resize-icon {
+  width: 50px;
+  height: 14px;
+  position: absolute;
+  top: -3px;
+  left: 48%;
+  cursor: n-resize;
+}
+.resize-icon .icon-top {
+  border-top: 1px solid #686868;
+  width: 84%;
+}
+.resize-icon .icon-bottom {
+  border-top: 1px solid #686868;
+  width: 84%;
+}
+.resize-icon .icon-center {
+  width: 100%;
+  height: 5px;
+  background: #686868;
+  border-radius: 5px;
+  margin: 1px 0;
+  margin-left: -4px;
+}
+.header-table-detail.text-title {
+  border-top: 4px solid #d0cece;
+}
+.content-grid-detail {
+  height: 175px;
+  min-height: 175px;
+}
+
+.icon-edit-pen1 {
+  height: 26px !important;
+  width: 34px !important;
+  background: url(../../assets/icon/qlts-icon.svg) no-repeat -326px -60px;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+}
+.icon-trash-table1 {
+  height: 26px !important;
+  width: 34px !important;
+  background: url(../../assets/icon/qlts-icon.svg) no-repeat -148px -61px;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+}
+.icon-refresh-time1 {
+  height: 26px !important;
+  width: 34px !important;
+  background: url(../../assets/icon/qlts-icon.svg) no-repeat -454px -104px;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+}
+
+.table-summary {
+    height: 55px;
+    /* margin-top: 6px; */
+    margin-left: 0;
+    padding-top: 8px;
+    background: #f5f6fa;
+    padding-left: 36px;
+    /* border-top: 1px solid #e5e5e5; */
+    /* margin-top: -9px; */
+}
+.button-refresh[data-v-5ecf59db] {
+    padding-left: 4px;
+}
+.paging-toolbar .leftchild {
+    height: 100%;
+    min-width: 330px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 355px;
+}
+input.checkbox1.checkboxAll1{
+  position: absolute;
+    left: 16px;
+    top: 10px;
+}
+.content {
+    height: calc(100%);
+}
+.table-detail thead tr th[data-v-5ecf59db] {
+    text-transform: uppercase;
+    font-size: 11px;
+    color: #1d3464;
+    position: sticky;
+    top: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.title {
+    padding: 12px;
+    margin: 0 16px;
+    width: calc(100% - 32px);
+    border-top: none;
+    box-sizing: border-box;
+    background: white;
+        border-left: 1px solid #d0cece;
+        border-right: 1px solid #d0cece;
+
+}
+.content-nav{
+    box-shadow: none;
+}
+
+.header-table-detail.text-title{
+    border-top: 4px solid #d0cece;
+    margin-left: 16px;
+}
+.content-grid {
+    overflow-x: hidden;
+}
+.content-grid-all {
+    height: calc(100% - 344px);
+}
+.title {
+ 
+    border-top: 4px solid #e5e5e5;
+}
+.header-table-detail.text-title{
+    border-top: none;
+}
+.icon-trash-table1[data-v-5ecf59db] {
+    height: 26px !important;
+    width: 34px !important;
+    background: url(/img/qlts-icon.d656886f.svg) no-repeat -121px -102px;
+    background-repeat: no-repeat;
+    border-radius: 3px;
+    background-size: 428px 1217px;
+}
+.icon-edit-pen1[data-v-5ecf59db] {
+    height: 26px !important;
+    width: 34px !important;
+    background: url(/img/qlts-icon.d656886f.svg) no-repeat -306px -99px;
+    background-repeat: no-repeat;
+    border-radius: 4px;
+    background-size: 480px 1332px;
+}
+.icon-refresh-time1[data-v-5ecf59db] {
+    height: 26px !important;
+    width: 34px !important;
+    background: url(/img/qlts-icon.d656886f.svg) no-repeat -396px -121px;
+    background-repeat: no-repeat;
+    border-radius: 4px;
+    background-size: 440px 1207px;
+}
+.button-refresh .icon[data-v-5ecf59db] {
+    height: 34px;
+    width: 34px;
+    background: url(/img/qlts-icon.d656886f.svg) no-repeat -109px -49px;
+    background-repeat: no-repeat;
+    border-radius: 4px;
+    background: -s;
+    background-size: 473px 1110px;
+}
+.header-right-item{
+  display: none;
+}
+.icon-trash {
+    background: url(/img/qlts-icon.d656886f.svg) no-repeat -453px -105px;
+}
 </style>

@@ -194,4 +194,24 @@ export default {
 .icon-down {
   opacity: 0.6!important;
 }
+.header{
+    height: 40px;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    display: flex;
+    margin-left: 0px;
+    box-sizing: border-box;
+    border-bottom: #e2e1e6 1px solid;
+    transition: all 0.5s;
+}
+.header .header-right .header-right-user .avatar {
+    width: 28px;
+    height: 28px;
+    margin: 0 10px 0 6px;
+}
+.combobox {
+   
+    height: 27px;
+}
 </style>

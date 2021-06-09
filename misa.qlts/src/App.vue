@@ -83,6 +83,7 @@ body {
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
+  display: block;
  }
 // /* Track */
 ::-webkit-scrollbar-track:hover {

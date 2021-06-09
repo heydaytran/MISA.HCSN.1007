@@ -1,5 +1,6 @@
 ﻿using MISA.QLTS.Core.Entities;
 using MISA.QLTS.Core.Interfaces;
+using MISA.QLTS.Core.Interfaces.IRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +13,14 @@ namespace MISA.EShop.Infrastructure.Repository
     {
         public UnitOfWork(IAssetRepository asset, 
             IAssetTypeRepository assetType, 
-            IDepartmentRepository department
+            IDepartmentRepository department,
+            IAssetIncreaseRepository assetIncrease
             )
         {
             Asset = asset;
             AssetType = assetType;
             Department = department;
+            AssetIncrease = assetIncrease;
         }
 
         public IAssetRepository Asset { get; }
@@ -26,5 +29,6 @@ namespace MISA.EShop.Infrastructure.Repository
 
         public IDepartmentRepository Department { get; }
 
+        public IAssetIncreaseRepository AssetIncrease { get; }
     }
 }

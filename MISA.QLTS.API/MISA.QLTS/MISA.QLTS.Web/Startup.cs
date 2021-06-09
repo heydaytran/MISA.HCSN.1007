@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MISA.EShop.Infrastructure.Repository;
 using MISA.QLTS.Core.Interfaces;
+using MISA.QLTS.Core.Interfaces.IRepository;
+using MISA.QLTS.Core.Interfaces.IService;
 using MISA.QLTS.Core.Service;
 using MISA.QLTS.Infrastructure.Repository;
 using System;
@@ -56,6 +58,9 @@ namespace MISA.QLTS.Web
 
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IDepartmentService, DepartmentService>();
+
+            services.AddScoped<IAssetIncreaseRepository, AssetIncreaseRepository>();
+            services.AddScoped<IAssetIncreaseService, AssetIncreaseService>();
 
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MISA.QLTS.Core.Interfaces.IRepository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,11 @@ namespace MISA.QLTS.Core.Interfaces
         /// Đối tượng phòng ban
         /// </summary>
         IDepartmentRepository Department { get; }
+
+        /// <summary>
+        /// Đối tượng ghi ghi tăng tài sản
+        /// </summary>
+        IAssetIncreaseRepository AssetIncrease { get; }
 
      
     }

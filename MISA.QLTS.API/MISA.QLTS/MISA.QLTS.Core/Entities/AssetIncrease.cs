@@ -15,7 +15,7 @@ namespace MISA.QLTS.Core.Entities
         /// author: TVTHINH 30-05-2021
 
         [Key]
-        public Guid? IncreaseId { get; set; }
+        public Guid? AssetIncreaseId { get; set; }
 
         /// <summary>
         /// Mã chứng từ

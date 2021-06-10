@@ -644,6 +644,12 @@ export default {
           this.listSelectRow.push(this.listAssetIncreaseId[i]);
         }
       } else if (e.ctrlKey) {
+
+        this.indexDetail = ind;
+          this.increaseDetails = this.listAssetIncrease[
+            this.indexDetail
+          ].increaseDetail;
+
         var index = this.listSelectRow.indexOf(id);
         if (index > -1) {
           this.listSelectRow.splice(index, 1);
@@ -1805,7 +1811,7 @@ table tbody tr td {
   background-repeat: no-repeat;
   border-radius: 4px;
 }
-.icon-refresh-time1 {
+.icon-refresh-time1 { 
   height: 26px !important;
   width: 34px !important;
   background: url(../../assets/icon/qlts-icon.svg) no-repeat -454px -104px;
@@ -1951,5 +1957,19 @@ input.checkbox1.checkboxAll1 {
     height: 25.3%;
 }
 
-
+.header-table-detail.text-title{
+    border-top: 2px solid #dedede;
+}
+.header .header-left .parent-section[data-v-9778edae] {
+    color: #178aa9;
+    font-family: GoogleSans-Regular;
+}
+.resize-icon {
+    width: 50px;
+    height: 14px;
+    position: absolute;
+    top: -6px;
+    left: 48%;
+    cursor: n-resize;
+}
 </style>

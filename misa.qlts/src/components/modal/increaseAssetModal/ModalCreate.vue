@@ -331,6 +331,21 @@
         ref="chooseAsset_ref"
       />
     </div>
+     <!-- <div v-show="isChangeDetail" class="div-container modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        
+        <div class="modal-content" style="width: 318px">
+          Dữ liệu các chứng từ đã chọn sẽ bị xóa. <br>
+          Bạn có chắc chắn muốn xóa?
+        </div>
+        <div class="modal-footer">
+          <div class="btn" @click="hide()" >Hủy</div>
+          <div class="btn btn-confirm-delete" @click="confirmDelete()">Xóa</div>
+        </div>
+      </div>
+         <BaseLoading ref="BaseLoading_ref"/>
+    </div> -->
   </div>
 </template>
 
@@ -2191,4 +2206,9 @@ table tbody tr td:nth-child(5) {
      box-shadow:none; 
 }
 
+.btn.btn-save {
+    position: absolute;
+    right: 19px;
+    background: #178aa9;
+}
 </style>

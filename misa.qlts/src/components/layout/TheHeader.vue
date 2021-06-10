@@ -81,7 +81,7 @@ export default {
     align-items: center;
 
     .parent-section {
-      color: #16b2fe;
+       color: #178aa9;
       font-family: GoogleSans-Regular;
 
       &:hover {

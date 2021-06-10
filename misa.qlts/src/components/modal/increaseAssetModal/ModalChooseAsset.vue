@@ -1404,4 +1404,11 @@ table tr td:nth-child(7), table th:nth-child(7){
     right: 38px;
     background: #00abfe;
 }
+.btn.btn-close, .btn.btn-help {
+    border: none;
+    position: absolute;
+    right: 31px!important;
+    top: 14px!important;
+}
+
 </style>
